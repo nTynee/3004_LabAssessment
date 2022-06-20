@@ -22,8 +22,11 @@ import safeentry_pb2_grpc
 
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
-    def Greet(self, request, context):
-        #TODO: Implement Greet() procedure
+    def Message(self, request, context):
+        return safeentry_pb2.Reply(message = request.message)
+    
+    def Check(self, request, context):
+        # TODO
         pass
 
 def serve():

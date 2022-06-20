@@ -28,7 +28,7 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = safeentry_pb2_grpc.SafeEntryStub(channel)
 
-        response = stub.Greet(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
+        response = stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
         print(str(response.message))
 
 if __name__ == '__main__':

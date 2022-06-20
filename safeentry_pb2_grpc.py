@@ -15,10 +15,15 @@ class SafeEntryStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Greet = channel.unary_unary(
-                '/SafeEntry.SafeEntry/Greet',
+        self.Message = channel.unary_unary(
+                '/SafeEntry.SafeEntry/Message',
                 request_serializer=safeentry__pb2.Request.SerializeToString,
                 response_deserializer=safeentry__pb2.Reply.FromString,
+                )
+        self.Check = channel.unary_unary(
+                '/SafeEntry.SafeEntry/Check',
+                request_serializer=safeentry__pb2.StatusCheckRequest.SerializeToString,
+                response_deserializer=safeentry__pb2.StatusCheckResponse.FromString,
                 )
 
 
@@ -26,7 +31,13 @@ class SafeEntryServicer(object):
     """The greeting service definition.
     """
 
-    def Greet(self, request, context):
+    def Message(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Check(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -35,10 +46,15 @@ class SafeEntryServicer(object):
 
 def add_SafeEntryServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Greet': grpc.unary_unary_rpc_method_handler(
-                    servicer.Greet,
+            'Message': grpc.unary_unary_rpc_method_handler(
+                    servicer.Message,
                     request_deserializer=safeentry__pb2.Request.FromString,
                     response_serializer=safeentry__pb2.Reply.SerializeToString,
+            ),
+            'Check': grpc.unary_unary_rpc_method_handler(
+                    servicer.Check,
+                    request_deserializer=safeentry__pb2.StatusCheckRequest.FromString,
+                    response_serializer=safeentry__pb2.StatusCheckResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -52,7 +68,7 @@ class SafeEntry(object):
     """
 
     @staticmethod
-    def Greet(request,
+    def Message(request,
             target,
             options=(),
             channel_credentials=None,
@@ -62,8 +78,25 @@ class SafeEntry(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/SafeEntry.SafeEntry/Greet',
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.SafeEntry/Message',
             safeentry__pb2.Request.SerializeToString,
             safeentry__pb2.Reply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Check(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.SafeEntry/Check',
+            safeentry__pb2.StatusCheckRequest.SerializeToString,
+            safeentry__pb2.StatusCheckResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

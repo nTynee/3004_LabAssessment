@@ -14,11 +14,14 @@
 
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package SafeEntry;
 
 // The greeting service definition.
 service SafeEntry {
-  rpc Greet (Request) returns (Reply) {}
+  rpc Message (Request) returns (Reply) {}
+  rpc Check (StatusCheckRequest) returns (StatusCheckResponse) {}
 }
 
 // The request message containing the request
@@ -29,4 +32,24 @@ message Request {
 // The response message containing the reply
 message Reply {
   string message = 1;
+}
+
+message StatusCheckRequest {
+  string status = 1;
+}
+
+message StatusCheckResponse {
+  enum SafeEntryStatus {
+    CHECKIN = 0;
+    CHECKOUT = 1;
+  }
+  SafeEntryStatus status = 1;
+}
+
+message UserInfo {
+    string name = 1;
+    string nric = 2;
+    string location = 3;
+    google.protobuf.Timestamp checkin = 4;
+    google.protobuf.Timestamp checkout = 5;
 }
