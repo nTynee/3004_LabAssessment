@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"$\n\x12StatusCheckRequest\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x83\x01\n\x13StatusCheckResponse\x12>\n\x06status\x18\x01 \x01(\x0e\x32..SafeEntry.StatusCheckResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"\x93\x01\n\x08UserInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\x12\x10\n\x08location\x18\x03 \x01(\t\x12+\n\x07\x63heckin\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x63heckout\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2\x88\x01\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12H\n\x05\x43heck\x12\x1d.SafeEntry.StatusCheckRequest\x1a\x1e.SafeEntry.StatusCheckResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"$\n\x12StatusCheckRequest\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x83\x01\n\x13StatusCheckResponse\x12>\n\x06status\x18\x01 \x01(\x0e\x32..SafeEntry.StatusCheckResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"\x93\x01\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08location\x18\x03 \x01(\t\x12+\n\x07\x63heckin\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x63heckout\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\x88\x01\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12H\n\x05\x43heck\x12\x1d.SafeEntry.StatusCheckRequest\x1a\x1e.SafeEntry.StatusCheckResponse\"\x00\x62\x06proto3')
 
 
 
@@ -24,6 +24,7 @@ _REPLY = DESCRIPTOR.message_types_by_name['Reply']
 _STATUSCHECKREQUEST = DESCRIPTOR.message_types_by_name['StatusCheckRequest']
 _STATUSCHECKRESPONSE = DESCRIPTOR.message_types_by_name['StatusCheckResponse']
 _USERINFO = DESCRIPTOR.message_types_by_name['UserInfo']
+_USERINFODICT = DESCRIPTOR.message_types_by_name['UserInfoDict']
 _STATUSCHECKRESPONSE_SAFEENTRYSTATUS = _STATUSCHECKRESPONSE.enum_types_by_name['SafeEntryStatus']
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), {
   'DESCRIPTOR' : _REQUEST,
@@ -60,6 +61,13 @@ UserInfo = _reflection.GeneratedProtocolMessageType('UserInfo', (_message.Messag
   })
 _sym_db.RegisterMessage(UserInfo)
 
+UserInfoDict = _reflection.GeneratedProtocolMessageType('UserInfoDict', (_message.Message,), {
+  'DESCRIPTOR' : _USERINFODICT,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.UserInfoDict)
+  })
+_sym_db.RegisterMessage(UserInfoDict)
+
 _SAFEENTRY = DESCRIPTOR.services_by_name['SafeEntry']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
@@ -76,6 +84,8 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _STATUSCHECKRESPONSE_SAFEENTRYSTATUS._serialized_end=287
   _USERINFO._serialized_start=290
   _USERINFO._serialized_end=437
-  _SAFEENTRY._serialized_start=440
-  _SAFEENTRY._serialized_end=576
+  _USERINFODICT._serialized_start=439
+  _USERINFODICT._serialized_end=488
+  _SAFEENTRY._serialized_start=491
+  _SAFEENTRY._serialized_end=627
 # @@protoc_insertion_point(module_scope)

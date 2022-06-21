@@ -47,9 +47,13 @@ message StatusCheckResponse {
 }
 
 message UserInfo {
-    string name = 1;
-    string nric = 2;
+    string nric = 1;
+    string name = 2;
     string location = 3;
     google.protobuf.Timestamp checkin = 4;
     google.protobuf.Timestamp checkout = 5;
+}
+
+message UserInfoDict {
+  repeated UserInfo info = 1;
 }
