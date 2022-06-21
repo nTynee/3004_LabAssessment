@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"$\n\x12StatusCheckRequest\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x83\x01\n\x13StatusCheckResponse\x12>\n\x06status\x18\x01 \x01(\x0e\x32..SafeEntry.StatusCheckResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"\x93\x01\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08location\x18\x03 \x01(\t\x12+\n\x07\x63heckin\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x63heckout\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\x88\x01\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12H\n\x05\x43heck\x12\x1d.SafeEntry.StatusCheckRequest\x1a\x1e.SafeEntry.StatusCheckResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"$\n\x12StatusCheckRequest\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x83\x01\n\x13StatusCheckResponse\x12>\n\x06status\x18\x01 \x01(\x0e\x32..SafeEntry.StatusCheckResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"%\n\x11get_location_data\x12\x10\n\x08location\x18\x01 \x01(\t\"]\n\x0cLocationInfo\x12\n\n\x02ic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x03 \x01(\t\x12\x10\n\x08\x63heckout\x18\x04 \x01(\t\x12\x10\n\x08infected\x18\x05 \x01(\t\"5\n\x08location\x12)\n\x08response\x18\x01 \x03(\x0b\x32\x17.SafeEntry.LocationInfo\"8\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08location\x18\x03 \x01(\t\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\x88\x01\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12H\n\x05\x43heck\x12\x1d.SafeEntry.StatusCheckRequest\x1a\x1e.SafeEntry.StatusCheckResponse\"\x00\x32R\n\x0cLocationData\x12\x42\n\x0bGetLocation\x12\x1c.SafeEntry.get_location_data\x1a\x13.SafeEntry.location\"\x00\x62\x06proto3')
 
 
 
@@ -23,6 +23,9 @@ _REQUEST = DESCRIPTOR.message_types_by_name['Request']
 _REPLY = DESCRIPTOR.message_types_by_name['Reply']
 _STATUSCHECKREQUEST = DESCRIPTOR.message_types_by_name['StatusCheckRequest']
 _STATUSCHECKRESPONSE = DESCRIPTOR.message_types_by_name['StatusCheckResponse']
+_GET_LOCATION_DATA = DESCRIPTOR.message_types_by_name['get_location_data']
+_LOCATIONINFO = DESCRIPTOR.message_types_by_name['LocationInfo']
+_LOCATION = DESCRIPTOR.message_types_by_name['location']
 _USERINFO = DESCRIPTOR.message_types_by_name['UserInfo']
 _USERINFODICT = DESCRIPTOR.message_types_by_name['UserInfoDict']
 _STATUSCHECKRESPONSE_SAFEENTRYSTATUS = _STATUSCHECKRESPONSE.enum_types_by_name['SafeEntryStatus']
@@ -54,6 +57,27 @@ StatusCheckResponse = _reflection.GeneratedProtocolMessageType('StatusCheckRespo
   })
 _sym_db.RegisterMessage(StatusCheckResponse)
 
+get_location_data = _reflection.GeneratedProtocolMessageType('get_location_data', (_message.Message,), {
+  'DESCRIPTOR' : _GET_LOCATION_DATA,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.get_location_data)
+  })
+_sym_db.RegisterMessage(get_location_data)
+
+LocationInfo = _reflection.GeneratedProtocolMessageType('LocationInfo', (_message.Message,), {
+  'DESCRIPTOR' : _LOCATIONINFO,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.LocationInfo)
+  })
+_sym_db.RegisterMessage(LocationInfo)
+
+location = _reflection.GeneratedProtocolMessageType('location', (_message.Message,), {
+  'DESCRIPTOR' : _LOCATION,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.location)
+  })
+_sym_db.RegisterMessage(location)
+
 UserInfo = _reflection.GeneratedProtocolMessageType('UserInfo', (_message.Message,), {
   'DESCRIPTOR' : _USERINFO,
   '__module__' : 'safeentry_pb2'
@@ -69,6 +93,7 @@ UserInfoDict = _reflection.GeneratedProtocolMessageType('UserInfoDict', (_messag
 _sym_db.RegisterMessage(UserInfoDict)
 
 _SAFEENTRY = DESCRIPTOR.services_by_name['SafeEntry']
+_LOCATIONDATA = DESCRIPTOR.services_by_name['LocationData']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
@@ -82,10 +107,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _STATUSCHECKRESPONSE._serialized_end=287
   _STATUSCHECKRESPONSE_SAFEENTRYSTATUS._serialized_start=243
   _STATUSCHECKRESPONSE_SAFEENTRYSTATUS._serialized_end=287
-  _USERINFO._serialized_start=290
-  _USERINFO._serialized_end=437
-  _USERINFODICT._serialized_start=439
-  _USERINFODICT._serialized_end=488
-  _SAFEENTRY._serialized_start=491
-  _SAFEENTRY._serialized_end=627
+  _GET_LOCATION_DATA._serialized_start=289
+  _GET_LOCATION_DATA._serialized_end=326
+  _LOCATIONINFO._serialized_start=328
+  _LOCATIONINFO._serialized_end=421
+  _LOCATION._serialized_start=423
+  _LOCATION._serialized_end=476
+  _USERINFO._serialized_start=478
+  _USERINFO._serialized_end=534
+  _USERINFODICT._serialized_start=536
+  _USERINFODICT._serialized_end=585
+  _SAFEENTRY._serialized_start=588
+  _SAFEENTRY._serialized_end=724
+  _LOCATIONDATA._serialized_start=726
+  _LOCATIONDATA._serialized_end=808
 # @@protoc_insertion_point(module_scope)

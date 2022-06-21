@@ -18,10 +18,16 @@ import "google/protobuf/timestamp.proto";
 
 package SafeEntry;
 
+
+
 // The greeting service definition.
 service SafeEntry {
   rpc Message (Request) returns (Reply) {}
   rpc Check (StatusCheckRequest) returns (StatusCheckResponse) {}
+}
+
+service LocationData {
+    rpc GetLocation (get_location_data) returns (location) {}
 }
 
 // The request message containing the request
@@ -46,12 +52,30 @@ message StatusCheckResponse {
   SafeEntryStatus status = 1;
 }
 
+// Location Data
+//request for location data
+message get_location_data {
+  string location = 1;
+}
+
+//location value pair
+message LocationInfo {
+    string ic = 1;
+    string name = 2;
+    string checkin = 3;
+    string checkout = 4;
+    string infected = 5;
+  }
+
+// response containing the data
+message location {
+    repeated LocationInfo response = 1;
+}
+
 message UserInfo {
     string nric = 1;
     string name = 2;
     string location = 3;
-    google.protobuf.Timestamp checkin = 4;
-    google.protobuf.Timestamp checkout = 5;
 }
 
 message UserInfoDict {

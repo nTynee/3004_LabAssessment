@@ -20,6 +20,11 @@ import grpc
 import safeentry_pb2
 import safeentry_pb2_grpc
 
+import json
+from google.protobuf.json_format import Parse
+
+input_file = ""
+
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
     def Message(self, request, context):
@@ -29,9 +34,26 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         # TODO
         pass
 
+
+
+class Location(safeentry_pb2_grpc.LocationDataServicer):
+
+    def GetLocation(self, request, context):
+        print("Retrieving location details...")
+        print(request.location)
+        with open(request.location + ".json", 'r') as f:
+            data = json.load(f)       
+        return safeentry_pb2.location(response=data)    
+
+    def DeclareLocation(self, request, context):
+                print("Declaring location...")
+
+
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     safeentry_pb2_grpc.add_SafeEntryServicer_to_server(SafeEntry(), server)
+    safeentry_pb2_grpc.add_LocationDataServicer_to_server(Location(), server)
 
     server.add_insecure_port('[::]:50051')
     server.start()
@@ -39,5 +61,5 @@ def serve():
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
+    logging.basicConfig()    
     serve()

@@ -21,16 +21,23 @@ import grpc
 import safeentry_pb2
 import safeentry_pb2_grpc
 
-def run():
-    # NOTE(gRPC Python Team): .close() is possible on a channel and should be
-    # used in circumstances in which the with statement does not fit the needs
-    # of the code.
-    with grpc.insecure_channel('localhost:50051') as channel:
-        stub = safeentry_pb2_grpc.SafeEntryStub(channel)
-
-        response = stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
+class SafeEntry: 
+    def __init__(self) -> None:
+        self.channel = grpc.insecure_channel('localhost:50051')
+        self.safe_entry_stub = safeentry_pb2_grpc.SafeEntryStub(self.channel)
+        self.location_stub = safeentry_pb2_grpc.LocationDataStub(self.channel)
+        
+    def run(self):
+        # NOTE(gRPC Python Team): .close() is possible on a channel and should be
+        # used in circumstances in which the with statement does not fit the needs
+        # of the code.
+        response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
         print(str(response.message))
+        response = self.location_stub.GetLocation(safeentry_pb2.get_location_data(location = 'Hougang'))
+        print(str(response.response))
+
 
 if __name__ == '__main__':
     logging.basicConfig()
-    run()
+    client = SafeEntry()
+    client.run()
