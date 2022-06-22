@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1c\n\nStatusInfo\x12\x0e\n\x06status\x18\x01 \x01(\t\"y\n\x0eStatusResponse\x12\x39\n\x06status\x18\x01 \x01(\x0e\x32).SafeEntry.StatusResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"@\n\x0c\x43heckRequest\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x10\n\x08location\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\x05\"\x1f\n\rCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\"3\n\x11get_location_data\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\"]\n\x0cLocationInfo\x12\n\n\x02ic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x03 \x01(\t\x12\x10\n\x08\x63heckout\x18\x04 \x01(\t\x12\x10\n\x08infected\x18\x05 \x01(\t\"5\n\x08location\x12)\n\x08response\x18\x01 \x03(\x0b\x32\x17.SafeEntry.LocationInfo\" \n\x10get_user_history\x12\x0c\n\x04nric\x18\x01 \x01(\t\"D\n\rHistoryRecord\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x02 \x01(\t\x12\x10\n\x08\x63heckout\x18\x03 \x01(\t\"<\n\x0ehistory_record\x12*\n\x08response\x18\x01 \x03(\x0b\x32\x18.SafeEntry.HistoryRecord\"8\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\xb3\x02\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12\x35\n\x05Login\x12\x13.SafeEntry.UserInfo\x1a\x15.SafeEntry.StatusInfo\"\x00\x12>\n\x07\x43heckIn\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12?\n\x08\x43heckOut\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12;\n\x05\x43heck\x12\x15.SafeEntry.StatusInfo\x1a\x19.SafeEntry.StatusResponse\"\x00\x32\xa4\x01\n\x0cLocationData\x12\x46\n\x0f\x44\x65\x63lareLocation\x12\x1c.SafeEntry.get_location_data\x1a\x13.SafeEntry.location\"\x00\x12L\n\x10GetHistoryRecord\x12\x1b.SafeEntry.get_user_history\x1a\x19.SafeEntry.history_record\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1c\n\nStatusInfo\x12\x0e\n\x06status\x18\x01 \x01(\t\"y\n\x0eStatusResponse\x12\x39\n\x06status\x18\x01 \x01(\x0e\x32).SafeEntry.StatusResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"@\n\x0c\x43heckRequest\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x10\n\x08location\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\x05\"\x1f\n\rCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\"3\n\x11get_location_data\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\"]\n\x0cLocationInfo\x12\n\n\x02ic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x03 \x01(\t\x12\x10\n\x08\x63heckout\x18\x04 \x01(\t\x12\x10\n\x08infected\x18\x05 \x01(\t\"5\n\x08location\x12)\n\x08response\x18\x01 \x03(\x0b\x32\x17.SafeEntry.LocationInfo\" \n\x10get_user_history\x12\x0c\n\x04nric\x18\x01 \x01(\t\"D\n\rHistoryRecord\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x02 \x01(\t\x12\x10\n\x08\x63heckout\x18\x03 \x01(\t\"<\n\x0ehistory_record\x12*\n\x08response\x18\x01 \x03(\x0b\x32\x18.SafeEntry.HistoryRecord\"(\n\x10get_notification\x12\x14\n\x0cnotification\x18\x01 \x01(\t\"\x1d\n\tnoti_info\x12\x10\n\x08response\x18\x01 \x01(\t\"8\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\xb3\x02\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12\x35\n\x05Login\x12\x13.SafeEntry.UserInfo\x1a\x15.SafeEntry.StatusInfo\"\x00\x12>\n\x07\x43heckIn\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12?\n\x08\x43heckOut\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12;\n\x05\x43heck\x12\x15.SafeEntry.StatusInfo\x1a\x19.SafeEntry.StatusResponse\"\x00\x32\xa4\x01\n\x0cLocationData\x12\x46\n\x0f\x44\x65\x63lareLocation\x12\x1c.SafeEntry.get_location_data\x1a\x13.SafeEntry.location\"\x00\x12L\n\x10GetHistoryRecord\x12\x1b.SafeEntry.get_user_history\x1a\x19.SafeEntry.history_record\"\x00\x32W\n\x0cNotification\x12G\n\x10SendNotification\x12\x1b.SafeEntry.get_notification\x1a\x14.SafeEntry.noti_info\"\x00\x62\x06proto3')
 
 
 
@@ -30,6 +30,8 @@ _LOCATION = DESCRIPTOR.message_types_by_name['location']
 _GET_USER_HISTORY = DESCRIPTOR.message_types_by_name['get_user_history']
 _HISTORYRECORD = DESCRIPTOR.message_types_by_name['HistoryRecord']
 _HISTORY_RECORD = DESCRIPTOR.message_types_by_name['history_record']
+_GET_NOTIFICATION = DESCRIPTOR.message_types_by_name['get_notification']
+_NOTI_INFO = DESCRIPTOR.message_types_by_name['noti_info']
 _USERINFO = DESCRIPTOR.message_types_by_name['UserInfo']
 _USERINFODICT = DESCRIPTOR.message_types_by_name['UserInfoDict']
 _STATUSRESPONSE_SAFEENTRYSTATUS = _STATUSRESPONSE.enum_types_by_name['SafeEntryStatus']
@@ -117,6 +119,20 @@ history_record = _reflection.GeneratedProtocolMessageType('history_record', (_me
   })
 _sym_db.RegisterMessage(history_record)
 
+get_notification = _reflection.GeneratedProtocolMessageType('get_notification', (_message.Message,), {
+  'DESCRIPTOR' : _GET_NOTIFICATION,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.get_notification)
+  })
+_sym_db.RegisterMessage(get_notification)
+
+noti_info = _reflection.GeneratedProtocolMessageType('noti_info', (_message.Message,), {
+  'DESCRIPTOR' : _NOTI_INFO,
+  '__module__' : 'safeentry_pb2'
+  # @@protoc_insertion_point(class_scope:SafeEntry.noti_info)
+  })
+_sym_db.RegisterMessage(noti_info)
+
 UserInfo = _reflection.GeneratedProtocolMessageType('UserInfo', (_message.Message,), {
   'DESCRIPTOR' : _USERINFO,
   '__module__' : 'safeentry_pb2'
@@ -133,6 +149,7 @@ _sym_db.RegisterMessage(UserInfoDict)
 
 _SAFEENTRY = DESCRIPTOR.services_by_name['SafeEntry']
 _LOCATIONDATA = DESCRIPTOR.services_by_name['LocationData']
+_NOTIFICATION = DESCRIPTOR.services_by_name['Notification']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
@@ -162,12 +179,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _HISTORYRECORD._serialized_end=641
   _HISTORY_RECORD._serialized_start=643
   _HISTORY_RECORD._serialized_end=703
-  _USERINFO._serialized_start=705
-  _USERINFO._serialized_end=761
-  _USERINFODICT._serialized_start=763
-  _USERINFODICT._serialized_end=812
-  _SAFEENTRY._serialized_start=815
-  _SAFEENTRY._serialized_end=1122
-  _LOCATIONDATA._serialized_start=1125
-  _LOCATIONDATA._serialized_end=1289
+  _GET_NOTIFICATION._serialized_start=705
+  _GET_NOTIFICATION._serialized_end=745
+  _NOTI_INFO._serialized_start=747
+  _NOTI_INFO._serialized_end=776
+  _USERINFO._serialized_start=778
+  _USERINFO._serialized_end=834
+  _USERINFODICT._serialized_start=836
+  _USERINFODICT._serialized_end=885
+  _SAFEENTRY._serialized_start=888
+  _SAFEENTRY._serialized_end=1195
+  _LOCATIONDATA._serialized_start=1198
+  _LOCATIONDATA._serialized_end=1362
+  _NOTIFICATION._serialized_start=1364
+  _NOTIFICATION._serialized_end=1451
 # @@protoc_insertion_point(module_scope)

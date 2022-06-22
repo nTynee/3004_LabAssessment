@@ -17,11 +17,12 @@ from concurrent import futures
 import logging
 
 import grpc
+from numpy import diff
 import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
-from google.protobuf.json_format import Parse
+from datetime import datetime
 
 input_file = ""
 
@@ -56,7 +57,6 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
 
     def DeclareLocation(self, request, context):
         print("Retrieving location details...")
-        print(request.location)
 
         # set user as covid infected
         with open(request.location + ".json", 'r') as f:
@@ -65,12 +65,29 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         for i in data:
             if i["ic"] == request.nric:
                 i["infected"] = 'T'
+                infected_checkin = datetime.strptime(i["checkin"], '%b %d %H:%M:%S %Y')
 
         with open(request.location + ".json", "w") as f:
             json.dump(data, f)
+        
+        # people within the range of 14 days
+        noti_list = []
+        for i in data:
+            checkin = datetime.strptime(i["checkin"], '%b %d %H:%M:%S %Y')                   
+            difference = (infected_checkin - checkin).days
 
+            if difference <= 14 and difference >= -14:
+                #save to a list to return back
+                noti_list.append(i["ic"])
+        
         print("Declaring location...")
         return safeentry_pb2.location(response=data)
+
+
+class Notification(safeentry_pb2_grpc.NotificationServicer):
+
+    def SendNotification(self, request, context):
+        return safeentry_pb2.noti_info(response="testtttt")
 
 
 
@@ -78,6 +95,7 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     safeentry_pb2_grpc.add_SafeEntryServicer_to_server(SafeEntry(), server)
     safeentry_pb2_grpc.add_LocationDataServicer_to_server(Location(), server)
+    safeentry_pb2_grpc.add_NotificationServicer_to_server(Notification(), server)
 
     server.add_insecure_port('[::]:50051')
     server.start()

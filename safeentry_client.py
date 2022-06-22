@@ -26,6 +26,7 @@ class SafeEntry:
         self.channel = grpc.insecure_channel('localhost:50051')
         self.safe_entry_stub = safeentry_pb2_grpc.SafeEntryStub(self.channel)
         self.location_stub = safeentry_pb2_grpc.LocationDataStub(self.channel)
+        self.notification_stub = safeentry_pb2_grpc.NotificationStub(self.channel)
         
     def run(self):
         # NOTE(gRPC Python Team): .close() is possible on a channel and should be
@@ -130,7 +131,14 @@ class SafeEntry:
     def declare_location(self):
         response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = 'Hougang', nric = "S9123456A"))        
         print(str(response_location.response))
+        #print(str(response_location.response))
         exit()
+
+    def send_notification(self):
+        response_noti = self.notification_stub.SendNotification(safeentry_pb2.get_notification(notification = ""))        
+        print(str(response_noti.response))
+
+
 
 if __name__ == '__main__':
     logging.basicConfig()

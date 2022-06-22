@@ -293,3 +293,64 @@ class LocationData(object):
             safeentry__pb2.history_record.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class NotificationStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.SendNotification = channel.unary_unary(
+                '/SafeEntry.Notification/SendNotification',
+                request_serializer=safeentry__pb2.get_notification.SerializeToString,
+                response_deserializer=safeentry__pb2.noti_info.FromString,
+                )
+
+
+class NotificationServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def SendNotification(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_NotificationServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'SendNotification': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendNotification,
+                    request_deserializer=safeentry__pb2.get_notification.FromString,
+                    response_serializer=safeentry__pb2.noti_info.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'SafeEntry.Notification', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Notification(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def SendNotification(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.Notification/SendNotification',
+            safeentry__pb2.get_notification.SerializeToString,
+            safeentry__pb2.noti_info.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
