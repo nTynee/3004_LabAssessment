@@ -210,17 +210,28 @@ class LocationDataStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetLocation = channel.unary_unary(
-                '/SafeEntry.LocationData/GetLocation',
+        self.DeclareLocation = channel.unary_unary(
+                '/SafeEntry.LocationData/DeclareLocation',
                 request_serializer=safeentry__pb2.get_location_data.SerializeToString,
                 response_deserializer=safeentry__pb2.location.FromString,
+                )
+        self.GetHistoryRecord = channel.unary_unary(
+                '/SafeEntry.LocationData/GetHistoryRecord',
+                request_serializer=safeentry__pb2.get_user_history.SerializeToString,
+                response_deserializer=safeentry__pb2.history_record.FromString,
                 )
 
 
 class LocationDataServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def GetLocation(self, request, context):
+    def DeclareLocation(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetHistoryRecord(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -229,10 +240,15 @@ class LocationDataServicer(object):
 
 def add_LocationDataServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetLocation': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetLocation,
+            'DeclareLocation': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeclareLocation,
                     request_deserializer=safeentry__pb2.get_location_data.FromString,
                     response_serializer=safeentry__pb2.location.SerializeToString,
+            ),
+            'GetHistoryRecord': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetHistoryRecord,
+                    request_deserializer=safeentry__pb2.get_user_history.FromString,
+                    response_serializer=safeentry__pb2.history_record.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -245,7 +261,7 @@ class LocationData(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetLocation(request,
+    def DeclareLocation(request,
             target,
             options=(),
             channel_credentials=None,
@@ -255,8 +271,25 @@ class LocationData(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/SafeEntry.LocationData/GetLocation',
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.LocationData/DeclareLocation',
             safeentry__pb2.get_location_data.SerializeToString,
             safeentry__pb2.location.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetHistoryRecord(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.LocationData/GetHistoryRecord',
+            safeentry__pb2.get_user_history.SerializeToString,
+            safeentry__pb2.history_record.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

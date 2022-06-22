@@ -1,0 +1,14 @@
+[
+    {
+        "nric": "S9123456A",
+        "password": "12",
+        "name": "Mary Tan",
+        "role": "citizen"
+    },
+    {
+        "nric": "S9987654A",
+        "password": "123",
+        "name": "Ben Tan",
+        "role": "officer"        
+    }
+]

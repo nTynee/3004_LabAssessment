@@ -31,6 +31,9 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         return safeentry_pb2.Reply(message = request.message)
 
     def Login(self, request, context):
+        with open("Users.json", 'r') as f:
+            data = json.load(f) 
+
         if (request.nric == '123'):
             return safeentry_pb2.StatusInfo(status = 'user')
         elif (request.nric == '12345'):
@@ -46,15 +49,30 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
 class Location(safeentry_pb2_grpc.LocationDataServicer):
 
-    def GetLocation(self, request, context):
-        print("Retrieving location details...")
-        print(request.location)
-        with open(request.location + ".json", 'r') as f:
-            data = json.load(f)       
-        return safeentry_pb2.location(response=data)    
+    def GetHistoryRecord(self, request, context):
+        print("Retrieving history records...")
+        print(request.nric)
+        with open(request.nric + ".json", 'r') as f:
+            data = json.load(f)      
+        return safeentry_pb2.history_record(response=data)    
 
     def DeclareLocation(self, request, context):
-                print("Declaring location...")
+        print("Retrieving location details...")
+        print(request.location)
+
+        # set user as covid infected
+        with open(request.location + ".json", 'r') as f:
+            data = json.load(f) 
+
+        for i in data:
+            if i["ic"] == request.nric:
+                i["infected"] = 'T'
+
+        with open(request.location + ".json", "w") as f:
+            json.dump(data, f)
+
+        print("Declaring location...")
+        return safeentry_pb2.location(response=data)
 
 
 

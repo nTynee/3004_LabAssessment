@@ -118,12 +118,14 @@ class SafeEntry:
         exit()
 
     def show_history(self):
-        response_location = self.location_stub.GetLocation(safeentry_pb2.get_location_data(location = 'Hougang'))
+        response_history = self.location_stub.GetHistoryRecord(safeentry_pb2.get_user_history(nric = 'S9123456A'))    
         print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')
-        print(str(response_location.response))
+        print(str(response_history.response))
         exit()
 
     def declare_location(self):
+        response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = 'Hougang', nric = "S9123456A"))        
+        print(str(response_location.response))
         exit()
 
 if __name__ == '__main__':

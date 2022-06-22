@@ -26,7 +26,8 @@ service SafeEntry {
 }
 
 service LocationData {
-    rpc GetLocation (get_location_data) returns (location) {}
+    rpc DeclareLocation (get_location_data) returns (location) {}
+    rpc GetHistoryRecord (get_user_history) returns (history_record) {}
 }
 
 // The request message containing the request
@@ -62,10 +63,12 @@ message CheckResponse {
   bool status = 1;
 }
 
+
 // Location Data
 // Request for location data
 message get_location_data {
   string location = 1;
+  string nric = 2;
 }
 
 // Location value pair
@@ -80,6 +83,23 @@ message LocationInfo {
 // Response containing the data
 message location {
     repeated LocationInfo response = 1;
+}
+
+
+// Infected info
+message get_user_history {
+  string nric = 1;
+}
+
+message HistoryRecord {
+    string location = 1;
+    string checkin = 2;
+    string checkout = 3;
+  }
+
+// Response containing the data
+message history_record {
+    repeated HistoryRecord response = 1;
 }
 
 message UserInfo {
