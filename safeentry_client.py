@@ -36,29 +36,33 @@ class SafeEntry:
         while(1):
             print(str(response.message))
             # TODO: if there's notification, show the message
-            print("1) Login")
-            print("2) Exit\n")
+            print("1) User Login")
+            print("2) Officer Login")
+            print("3) Exit\n")
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
-                self.login()
+                self.login(1)
+            if user_input == '2':
+                self.login(2)
             elif user_input == '2':
                 exit()
             else:
                 print('\nInvalid! Please Try Again!\n')
                 continue
     
-    def login(self):
+    def login(self, number):
         while(1):
             print('Please Enter Login Credentials.')
             nric = input("Enter NRIC: ")
             password = input("Enter Password: ")
             response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password))
 
-            if response.status == 'user':
-                self.user_ui()
-            elif response.status == 'officer':
-                self.officer_ui()
+            if response.status == 'success':
+                if number == 1:
+                    self.user_ui()
+                elif number == 2:
+                    self.officer_ui()
             else:
                 print('\nError Logging In. Please Try Again!\n')
                 continue

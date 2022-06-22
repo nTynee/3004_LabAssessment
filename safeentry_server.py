@@ -35,9 +35,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             data = json.load(f) 
 
         if (request.nric == '123'):
-            return safeentry_pb2.StatusInfo(status = 'user')
-        elif (request.nric == '12345'):
-            return safeentry_pb2.StatusInfo(status = 'officer')
+            return safeentry_pb2.StatusInfo(status = 'success')
         else:
             return safeentry_pb2.StatusInfo(status = 'error')
     
