@@ -29,6 +29,14 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
     def Message(self, request, context):
         return safeentry_pb2.Reply(message = request.message)
+
+    def Login(self, request, context):
+        if (request.nric == '123'):
+            return safeentry_pb2.StatusInfo(status = 'user')
+        elif (request.nric == '12345'):
+            return safeentry_pb2.StatusInfo(status = 'officer')
+        else:
+            return safeentry_pb2.StatusInfo(status = 'error')
     
     def Check(self, request, context):
         # TODO

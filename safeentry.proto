@@ -14,16 +14,15 @@
 
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 package SafeEntry;
-
-
 
 // The greeting service definition.
 service SafeEntry {
   rpc Message (Request) returns (Reply) {}
-  rpc Check (StatusCheckRequest) returns (StatusCheckResponse) {}
+  rpc Login (UserInfo) returns (StatusInfo) {}
+  rpc CheckIn (CheckRequest) returns (CheckResponse) {}
+  rpc CheckOut (CheckRequest) returns (CheckResponse) {}
+  rpc Check (StatusInfo) returns (StatusResponse) {}
 }
 
 service LocationData {
@@ -40,11 +39,11 @@ message Reply {
   string message = 1;
 }
 
-message StatusCheckRequest {
+message StatusInfo {
   string status = 1;
 }
 
-message StatusCheckResponse {
+message StatusResponse {
   enum SafeEntryStatus {
     CHECKIN = 0;
     CHECKOUT = 1;
@@ -52,13 +51,24 @@ message StatusCheckResponse {
   SafeEntryStatus status = 1;
 }
 
+// The request message containing the check in/check out details
+message CheckRequest {
+  string nric = 1;
+  string location = 2; 
+  int32 datetime = 3;
+}
+
+message CheckResponse {
+  bool status = 1;
+}
+
 // Location Data
-//request for location data
+// Request for location data
 message get_location_data {
   string location = 1;
 }
 
-//location value pair
+// Location value pair
 message LocationInfo {
     string ic = 1;
     string name = 2;
@@ -67,7 +77,7 @@ message LocationInfo {
     string infected = 5;
   }
 
-// response containing the data
+// Response containing the data
 message location {
     repeated LocationInfo response = 1;
 }
@@ -75,7 +85,7 @@ message location {
 message UserInfo {
     string nric = 1;
     string name = 2;
-    string location = 3;
+    string password = 3;
 }
 
 message UserInfoDict {

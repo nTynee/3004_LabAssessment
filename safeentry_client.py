@@ -32,10 +32,99 @@ class SafeEntry:
         # used in circumstances in which the with statement does not fit the needs
         # of the code.
         response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
-        print(str(response.message))
-        response = self.location_stub.GetLocation(safeentry_pb2.get_location_data(location = 'Hougang'))
-        print(str(response.response))
 
+        while(1):
+            print(str(response.message))
+            # TODO: if there's notification, show the message
+            print("1) Login")
+            print("2) Exit\n")
+            user_input = input("Please Select Choice: ")
+
+            if user_input == '1':
+                self.login()
+            elif user_input == '2':
+                exit()
+            else:
+                print('\nInvalid! Please Try Again!\n')
+                continue
+    
+    def login(self):
+        while(1):
+            print('Please Enter Login Credentials.')
+            nric = input("Enter NRIC: ")
+            password = input("Enter Password: ")
+            response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password))
+
+            if response.status == 'user':
+                self.user_ui()
+            elif response.status == 'officer':
+                self.officer_ui()
+            else:
+                print('\nError Logging In. Please Try Again!\n')
+                continue
+    
+    def user_ui(self):
+        while(1):
+            print("1) Check In")
+            print("2) Check Out")
+            print("3) Show History")
+            print("4) Exit\n")
+            user_input = input("Please Select Choice: ")
+
+            if user_input == '1':
+                self.check_in()
+            elif user_input == '2':
+                self.check_out()
+            elif user_input == '3':
+                self.show_history()
+            elif user_input == '4':
+                exit()
+            else:
+                print('\nInvalid! Please Try Again!\n')
+                continue
+
+    def officer_ui(self):
+        while(1):
+            print("1) Declare Location")
+            print("2) Exit\n")
+            user_input = input("Please Select Choice: ")
+
+            if user_input == '1':
+                self.declare_location()
+            elif user_input == '2':
+                exit()
+            else:
+                print('\nInvalid! Please Try Again!\n')
+                continue
+
+    def check_in(self):
+        while(1):
+            print("1) Individual Check In")
+            print("2) Group Check In\n")
+            print("3) Back\n")
+            user_input = input("Please Select Choice: ")
+
+            if user_input == '1':
+                exit()
+            elif user_input == '2':
+                exit()
+            elif user_input == '3':
+                self.user_ui()
+            else:
+                print('\nInvalid! Please Try Again!\n')
+                continue
+
+    def check_out(self):
+        exit()
+
+    def show_history(self):
+        response_location = self.location_stub.GetLocation(safeentry_pb2.get_location_data(location = 'Hougang'))
+        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')
+        print(str(response_location.response))
+        exit()
+
+    def declare_location(self):
+        exit()
 
 if __name__ == '__main__':
     logging.basicConfig()
