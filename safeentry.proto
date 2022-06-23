@@ -114,6 +114,7 @@ message UserInfo {
     string nric = 1;
     string name = 2;
     string password = 3;
+    int32 role = 4;
 }
 
 message UserInfoDict {

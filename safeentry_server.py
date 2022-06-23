@@ -32,31 +32,60 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         return safeentry_pb2.Reply(message = request.message)
 
     def Login(self, request, context):
-        with open("Users.json", 'r') as f:
-            data = json.load(f) 
+        if request.role == 1:
+            with open("Users.json", 'r') as f:
+                data = json.load(f) 
+            for i in data:
+                if (request.nric == i['nric'] and request.password == i['password']):
+                    return safeentry_pb2.StatusInfo(status = 'success')
 
-        for i in data:
-            if (request.nric == i['nric'] and request.password == i['password']):
-                return safeentry_pb2.StatusInfo(status = 'success')
-            else:
-                return safeentry_pb2.StatusInfo(status = 'error')
+        elif request.role == 2:
+            with open("Officers.json", 'r') as f:
+                data = json.load(f) 
+            for i in data:
+                if (request.nric.lower() == i['email'] and request.password == i['password']):
+                    return safeentry_pb2.StatusInfo(status = 'success')  
+        else:
+            return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
-        request.nric
-        request.location
-        request.datetime
-        check_bool = # TODO store inside json
+        dict = {
+            "ic" : request.nric,
+            "checkin" : request.datetime,
+            "checkout" : "",
+            "infected" : "F"
+        }
+        with open("Locations/" + request.location + ".json") as f:
+            data = json.load(f)
+
+        data.append(dict)
+
+        with open("Locations/" + request.location + ".json", 'w') as f:
+            json.dump(data, f)
+            check_bool = True
+        
         if check_bool:
-            print(request.nric + 'has successfully checked in at ' + request.location + ' during ' + request.datetime)
+            print(request.nric + ' has successfully checked in at ' + request.location + ' during ' + request.datetime)
         return safeentry_pb2.CheckResponse(status = check_bool)
 
     def CheckOut(self, request, context):
-        request.nric
-        request.location
-        request.datetime
-        check_bool = # TODO store inside json
+        dict = {
+            "ic" : request.nric,
+            "checkin" : request.datetime,
+            "checkout" : "",
+            "infected" : "F"
+        }
+        with open("Locations/" + request.location + ".json") as f:
+            data = json.load(f)
+
+        data.append(dict)
+
+        with open("Locations/" + request.location + ".json", 'w') as f:
+            json.dump(data, f)
+            check_bool = True
+            
         if check_bool:
-            print(request.nric + 'has successfully checked out at ' + request.location + ' during ' + request.datetime)
+            print(request.nric + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
         return safeentry_pb2.CheckResponse(status = check_bool)
 
     def Check(self, request, context):
@@ -78,21 +107,21 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         print("Retrieving location details...")
 
         # set user as covid infected
-        with open(request.location + ".json", 'r') as f:
+        with open("Locations/" + request.location + ".json", 'r') as f:
             data = json.load(f) 
 
         for i in data:
             if i["ic"] == request.nric:
                 i["infected"] = 'T'
-                infected_checkin = datetime.strptime(i["checkin"], '%b %d %H:%M:%S %Y')
+                infected_checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')
 
-        with open(request.location + ".json", "w") as f:
+        with open("Locations/" + request.location + ".json", "w") as f:
             json.dump(data, f)
         
         # people within the range of 14 days
         noti_list = []
         for i in data:
-            checkin = datetime.strptime(i["checkin"], '%b %d %H:%M:%S %Y')                   
+            checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')                   
             difference = (infected_checkin - checkin).days
 
             if difference <= 14 and difference >= -14:

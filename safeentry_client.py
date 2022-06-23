@@ -22,6 +22,7 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import time
+from datetime import datetime
 import os
 
 NRIC = ''
@@ -51,22 +52,22 @@ class SafeEntry:
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
-                self.login(1)
+                self.login(1, "NRIC")
             if user_input == '2':
-                self.login(2)
+                self.login(2, "Email")
             elif user_input == '3':
                 exit()
             else:
                 print('\nInvalid! Please Try Again!\n')
                 continue
     
-    def login(self, number):
+    def login(self, number, word):
         global NRIC
         while(1):
             print('Please Enter Login Credentials.')
-            nric = input("Enter NRIC: ")
+            nric = input("Enter {}: ".format(word))
             password = input("Enter Password: ")
-            response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password))
+            response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password, role = number))
 
             NRIC = nric.upper()
 
@@ -130,7 +131,7 @@ class SafeEntry:
                 location_input = input("\nPlease Select Location: ")
                 
                 if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
-                    date_time = time.strftime("%d/%m/%Y %H:%M:%S")
+                    date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
                     response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                     if response.status:
