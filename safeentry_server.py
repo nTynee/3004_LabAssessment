@@ -38,6 +38,9 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric == i['nric'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')
+                else:
+                    print("error")
+                    return safeentry_pb2.StatusInfo(status = 'error')
 
         elif request.role == 2:
             with open("Officers.json", 'r') as f:
@@ -45,8 +48,9 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric.lower() == i['email'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')  
-        else:
-            return safeentry_pb2.StatusInfo(status = 'error')
+                else:
+                    print("error")
+                    return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
         dict = {
@@ -78,12 +82,15 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
 
-        data.append(dict)
+        for i in data:
+            if i["ic"] == request.nric:
+                i["checkout"] = request.datetime
+                break
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
             check_bool = True
-            
+
         if check_bool:
             print(request.nric + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
         return safeentry_pb2.CheckResponse(status = check_bool)

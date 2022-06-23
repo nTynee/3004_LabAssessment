@@ -161,7 +161,7 @@ class SafeEntry:
             location_input = input("\nPlease Select Location: ")
             
             if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
-                date_time = time.strftime("%d/%m/%Y %H:%M:%S")
+                date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
                 response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
