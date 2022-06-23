@@ -21,8 +21,8 @@ import grpc
 import safeentry_pb2
 import safeentry_pb2_grpc
 
-import time
-from datetime import datetime
+import re
+from datetime import date, datetime
 import os
 
 NRIC = ''
@@ -198,12 +198,33 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
             if location_input.strip().isdigit() or int(location_input) <= LOCATIONS.count:
-                response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = "S9123456A"))        
-                print(str(response_location.response))
-                self.officer_ui()
+                date_entry = input('Enter checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
+                is_date = self.check_date_format(date_entry)
+                if is_date:      
+                    d = datetime.strptime(date_entry, "%Y-%m-%d %H:%M")
+                    d = d.strftime('%Y-%m-%dT%H:%M:%S.%f')
+                    
+                    response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = "S9123456A", datetime = d))        
+                    print(str(response_location.response))
+                    self.officer_ui()
+                else:
+                    print('\nInvalid Input! Please Try Again!\n')
+                    continue
             else:
                 print('\nInvalid Input! Please Try Again!\n')
                 continue
+
+            # 
+
+
+    def check_date_format(self, date):
+        regex = re.compile("[0-9]{4}\-[0-9]{2}\-[0-9]{2}\ [0-9]{2}\:[0-9]{2}")
+        match = re.match(regex, date)
+
+        if (match):
+            return True
+        else: 
+            return False     
 
 if __name__ == '__main__':
     logging.basicConfig()

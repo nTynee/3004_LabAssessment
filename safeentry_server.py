@@ -113,19 +113,12 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
     def DeclareLocation(self, request, context):
         print("Retrieving location details...")
 
-        # set user as covid infected
+        infected_checkin = datetime.strptime(request.datetime, '%Y-%m-%dT%H:%M:%S.%f')
+
+        # people within the range of 14 days
         with open("Locations/" + request.location + ".json", 'r') as f:
             data = json.load(f) 
 
-        for i in data:
-            if i["ic"] == request.nric:
-                i["infected"] = 'T'
-                infected_checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')
-
-        with open("Locations/" + request.location + ".json", "w") as f:
-            json.dump(data, f)
-        
-        # people within the range of 14 days
         noti_list = []
         for i in data:
             checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')                   
@@ -137,6 +130,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         
         print("Declaring location...")
         return safeentry_pb2.location(response=noti_list)
+        
 
 
 class Notification(safeentry_pb2_grpc.NotificationServicer):

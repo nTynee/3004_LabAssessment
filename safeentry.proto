@@ -75,6 +75,7 @@ message CheckResponse {
 message get_location_data {
   string location = 1;
   string nric = 2;
+  string datetime = 3;
 }
 
 // Response containing the data
