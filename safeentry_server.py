@@ -41,6 +41,20 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             else:
                 return safeentry_pb2.StatusInfo(status = 'error')
     
+    def CheckIn(self, request, context):
+        # TODO store inside json
+        request.nric
+        request.location
+        request.datetime
+        return safeentry_pb2.CheckResponse(status = True)
+
+    def CheckOut(self, request, context):
+        # TODO store inside json
+        request.nric
+        request.location
+        request.datetime
+        return safeentry_pb2.CheckResponse(status = True)
+
     def Check(self, request, context):
         # TODO
         pass

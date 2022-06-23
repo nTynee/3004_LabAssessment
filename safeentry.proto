@@ -62,7 +62,7 @@ message StatusResponse {
 message CheckRequest {
   string nric = 1;
   string location = 2; 
-  int32 datetime = 3;
+  string datetime = 3;
 }
 
 message CheckResponse {
