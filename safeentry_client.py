@@ -133,7 +133,7 @@ class SafeEntry:
                     date_time = time.strftime("%d/%m/%Y %H:%M:%S")
                     response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
-                    if response is True:
+                    if response.status:
                         print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
                         self.user_ui()
                     else:
@@ -163,7 +163,7 @@ class SafeEntry:
                 date_time = time.strftime("%d/%m/%Y %H:%M:%S")
                 response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
-                if response is True:
+                if response.status:
                     print('Successfully checked out at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
                     self.user_ui()
                 else:
