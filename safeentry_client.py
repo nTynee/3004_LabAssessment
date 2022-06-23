@@ -187,8 +187,9 @@ class SafeEntry:
 
     def show_history(self):
         response_history = self.location_stub.GetHistoryRecord(safeentry_pb2.get_user_history(nric = NRIC))    
-        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')
-        print(str(response_history.response))
+        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')        
+        for i in response_history.response:
+            print(i)
         exit()
 
     def declare_location(self):
