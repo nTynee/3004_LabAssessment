@@ -1,1 +1,23 @@
-[{"ic": "S3456325F", "name": "Alicia Lim", "checkin": "Jun 25 12:02:32 2022", "checkout": "Jun 25 15:02:32 2022", "infected": "F"}, {"ic": "S9123456A", "name": "Mary Tan", "checkin": "Jun 21 08:02:32 2022", "checkout": "Jun 21 10:02:32 2022", "infected": "T"}, {"ic": "S9987654A", "name": "Ben Tan", "checkin": "Jun 5 05:02:32 2022", "checkout": "Jun 5 07:02:32 2022", "infected": "F"}]
+[
+    {
+        "ic": "S3456325F",
+        "name": "Alicia Lim",
+        "checkin": "Jun 25 12:02:32 2022",
+        "checkout": "Jun 25 15:02:32 2022",
+        "infected": "F"
+    },
+    {
+        "ic": "S9123456A",
+        "name": "Mary Tan",
+        "checkin": "Jun 21 08:02:32 2022",
+        "checkout": "Jun 21 10:02:32 2022",
+        "infected": "F"
+    },
+    {
+        "ic": "S9987654A",
+        "name": "Ben Tan",
+        "checkin": "Jun 5 05:02:32 2022",
+        "checkout": "Jun 5 07:02:32 2022",
+        "infected": "F"
+    }
+]

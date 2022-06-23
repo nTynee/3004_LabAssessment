@@ -1,0 +1,12 @@
+[
+    {
+        "email": "bentan@moh.gov.sg",
+        "password": "hehe123",
+        "name": "Ben Tan"
+    },
+    {
+        "email": "peterlim@moh.gov.sg",
+        "password": "haha123",
+        "name": "Peter Lim"    
+    }
+]

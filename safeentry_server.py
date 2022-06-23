@@ -35,10 +35,11 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         with open("Users.json", 'r') as f:
             data = json.load(f) 
 
-        if (request.nric == '123'):
-            return safeentry_pb2.StatusInfo(status = 'success')
-        else:
-            return safeentry_pb2.StatusInfo(status = 'error')
+        for i in data:
+            if (request.nric == i['nric'] and request.password == i['password']):
+                return safeentry_pb2.StatusInfo(status = 'success')
+            else:
+                return safeentry_pb2.StatusInfo(status = 'error')
     
     def Check(self, request, context):
         # TODO
