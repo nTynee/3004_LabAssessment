@@ -33,12 +33,16 @@ class SafeEntry:
         self.channel = grpc.insecure_channel('localhost:50051')
         self.safe_entry_stub = safeentry_pb2_grpc.SafeEntryStub(self.channel)
         self.location_stub = safeentry_pb2_grpc.LocationDataStub(self.channel)
+        self.notification_stub = safeentry_pb2_grpc.NotificationStub(self.channel)
         
     def run(self):
         # NOTE(gRPC Python Team): .close() is possible on a channel and should be
         # used in circumstances in which the with statement does not fit the needs
         # of the code.
         response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
+
+        # test = self.notification_stub.SendNotification(safeentry_pb2.get_notification())
+        # print(str(test.response))
 
         while(1):
             # get locations from folder
@@ -87,7 +91,8 @@ class SafeEntry:
             print("1) Check In")
             print("2) Check Out")
             print("3) Show History")
-            print("4) Exit\n")
+            print("4) Edit User Details")
+            print("5) Exit\n")
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
@@ -97,6 +102,9 @@ class SafeEntry:
             elif user_input == '3':
                 self.show_history()
             elif user_input == '4':
+                #TODO add function here :D
+                exit()
+            elif user_input == '5':
                 exit()
             else:
                 print('\nInvalid! Please Try Again!\n')
@@ -145,7 +153,37 @@ class SafeEntry:
                     continue
 
             elif user_input == '2':
-                exit()
+                print("List Of Locations: ")
+                self.print_locations()
+
+                nric_list = []
+                location_input = input("\nPlease Select Location: ")
+                
+                if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+
+                    number_input = input("\nNumber Of People: ")
+
+                    if number_input.isdigit():
+                        nric_list.append(NRIC)
+                        for x in number_input:
+                            nric_input = input("\nNRIC for Person " + x + ": ")
+                            nric_list.append(nric_input.upper)
+                            
+                        date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+                        response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
+
+                        if response.status:
+                            print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                            self.user_ui()
+                        else:
+                            print('Error! Please Check In Again!\n')
+                            self.check_in()
+                    else:
+                        print('\nInvalid Input! Please Try Again!\n')
+                        continue
+                else:
+                    print('\nInvalid Input! Please Try Again!\n')
+                    continue
             elif user_input == '3':
                 self.user_ui()
             else:
@@ -214,9 +252,6 @@ class SafeEntry:
             else:
                 print('\nInvalid Input! Please Try Again!\n')
                 continue
-
-            # 
-
 
     def check_date_format(self, date):
         regex = re.compile("[0-9]{4}\-[0-9]{2}\-[0-9]{2}\ [0-9]{2}\:[0-9]{2}")

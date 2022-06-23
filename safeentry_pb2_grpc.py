@@ -304,7 +304,7 @@ class NotificationStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SendNotification = channel.unary_unary(
+        self.SendNotification = channel.stream_stream(
                 '/SafeEntry.Notification/SendNotification',
                 request_serializer=safeentry__pb2.get_notification.SerializeToString,
                 response_deserializer=safeentry__pb2.noti_info.FromString,
@@ -314,7 +314,7 @@ class NotificationStub(object):
 class NotificationServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SendNotification(self, request, context):
+    def SendNotification(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -323,7 +323,7 @@ class NotificationServicer(object):
 
 def add_NotificationServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SendNotification': grpc.unary_unary_rpc_method_handler(
+            'SendNotification': grpc.stream_stream_rpc_method_handler(
                     servicer.SendNotification,
                     request_deserializer=safeentry__pb2.get_notification.FromString,
                     response_serializer=safeentry__pb2.noti_info.SerializeToString,
@@ -339,7 +339,7 @@ class Notification(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SendNotification(request,
+    def SendNotification(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -349,7 +349,7 @@ class Notification(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/SafeEntry.Notification/SendNotification',
+        return grpc.experimental.stream_stream(request_iterator, target, '/SafeEntry.Notification/SendNotification',
             safeentry__pb2.get_notification.SerializeToString,
             safeentry__pb2.noti_info.FromString,
             options, channel_credentials,

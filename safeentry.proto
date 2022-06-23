@@ -31,7 +31,7 @@ service LocationData {
 }
 
 service Notification {
-    rpc SendNotification (get_notification) returns (noti_info) {}
+    rpc SendNotification (stream get_notification) returns (stream noti_info) {}
 }
 
 
@@ -60,7 +60,7 @@ message StatusResponse {
 
 // The request message containing the check in/check out details
 message CheckRequest {
-  string nric = 1;
+  repeated string nric = 1;
   string location = 2; 
   string datetime = 3;
 }
@@ -80,7 +80,7 @@ message get_location_data {
 
 // Response containing the data
 message location {
-    repeated string response = 1;
+  repeated string response = 1;
 }
 
 
@@ -90,14 +90,14 @@ message get_user_history {
 }
 
 message HistoryRecord {
-    string location = 1;
-    string checkin = 2;
-    string checkout = 3;
-  }
+  string location = 1;
+  string checkin = 2;
+  string checkout = 3;
+}
 
 // Response containing the data
 message history_record {
-    repeated HistoryRecord response = 1;
+  repeated HistoryRecord response = 1;
 }
 
 
@@ -107,15 +107,15 @@ message get_notification {
 }
 
 message noti_info {
-    string response = 1;
-  }
+  string response = 1;
+}
 
 
 message UserInfo {
-    string nric = 1;
-    string name = 2;
-    string password = 3;
-    int32 role = 4;
+  string nric = 1;
+  string name = 2;
+  string password = 3;
+  int32 role = 4;
 }
 
 message UserInfoDict {

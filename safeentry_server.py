@@ -15,6 +15,7 @@
 
 from concurrent import futures
 import logging
+import threading
 
 import grpc
 from numpy import diff
@@ -137,6 +138,7 @@ class Notification(safeentry_pb2_grpc.NotificationServicer):
 
     def SendNotification(self, request, context):
         return safeentry_pb2.noti_info(response="testtttt")
+        
 
 
 
