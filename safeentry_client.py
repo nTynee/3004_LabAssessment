@@ -131,11 +131,11 @@ class SafeEntry:
     def declare_location(self):
         response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = 'Hougang', nric = "S9123456A"))        
         print(str(response_location.response))
-        #print(str(response_location.response))
+        self.send_notification(response_location.response)
         exit()
 
-    def send_notification(self):
-        response_noti = self.notification_stub.SendNotification(safeentry_pb2.get_notification(notification = ""))        
+    def send_notification(self, list):
+        response_noti = self.notification_stub.SendNotification(safeentry_pb2.get_notification(users_to_noti = list))        
         print(str(response_noti.response))
 
 

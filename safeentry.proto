@@ -77,18 +77,9 @@ message get_location_data {
   string nric = 2;
 }
 
-// Location value pair
-message LocationInfo {
-    string ic = 1;
-    string name = 2;
-    string checkin = 3;
-    string checkout = 4;
-    string infected = 5;
-  }
-
 // Response containing the data
 message location {
-    repeated LocationInfo response = 1;
+    repeated string response = 1;
 }
 
 
@@ -111,7 +102,7 @@ message history_record {
 
 // Notification 
 message get_notification {
-  string notification = 1;
+  repeated string users_to_noti = 1;
 }
 
 message noti_info {

@@ -81,7 +81,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                 noti_list.append(i["ic"])
         
         print("Declaring location...")
-        return safeentry_pb2.location(response=data)
+        return safeentry_pb2.location(response=noti_list)
 
 
 class Notification(safeentry_pb2_grpc.NotificationServicer):
