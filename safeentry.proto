@@ -22,7 +22,6 @@ service SafeEntry {
   rpc Login (UserInfo) returns (StatusInfo) {}
   rpc CheckIn (CheckRequest) returns (CheckResponse) {}
   rpc CheckOut (CheckRequest) returns (CheckResponse) {}
-  rpc Check (StatusInfo) returns (StatusResponse) {}
 }
 
 service LocationData {
@@ -52,14 +51,6 @@ message Reply {
 
 message StatusInfo {
   string status = 1;
-}
-
-message StatusResponse {
-  enum SafeEntryStatus {
-    CHECKIN = 0;
-    CHECKOUT = 1;
-  }
-  SafeEntryStatus status = 1;
 }
 
 message NRICRequest {
@@ -109,7 +100,6 @@ message history_record {
   repeated HistoryRecord response = 1;
 }
 
-
 // Change password
 message get_password {
   string old_password = 1;
@@ -120,8 +110,6 @@ message get_password {
 message password {
   string response = 1;
 }
-
-
 
 // Notification 
 message get_notification {

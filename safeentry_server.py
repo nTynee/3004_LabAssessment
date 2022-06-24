@@ -15,8 +15,6 @@
 
 from concurrent import futures
 import logging
-import threading
-import time
 
 import grpc
 from numpy import diff
@@ -94,11 +92,6 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         if check_bool:
             print(request.nric + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
         return safeentry_pb2.CheckResponse(status = check_bool)
-
-    def Check(self, request, context):
-        # TODO
-        pass
-
 
 
 class Location(safeentry_pb2_grpc.LocationDataServicer):

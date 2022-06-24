@@ -18,8 +18,6 @@ from cgi import test
 import csv
 
 import logging
-import sys
-import time
 
 import grpc
 from nbformat import read
@@ -28,13 +26,14 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import re
-from datetime import date, datetime
+from datetime import datetime
 import threading
 import os
 
 NRIC = ''
 LOCATIONS = []
 NOTIFICATIONS = []
+GROUP_CHECKIN = []
 
 class SafeEntry: 
     def __init__(self) -> None:
@@ -54,17 +53,13 @@ class SafeEntry:
         """
         global NOTIFICATIONS
         for notification in self.notification_stub.SendNotification(safeentry_pb2.Empty()):  # this line will wait for new messages from the server!
-            #print(notification.message)
             if NRIC != '':
                 if NRIC in notification.message:
-                    #print("aaaaa")
                     file = 'Notification/' + NRIC + '.csv'
         
                     with open(file, 'r', encoding='UTF8') as f:
                         reader = list(csv.reader(f))
                         if NOTIFICATIONS != reader:
-                            # print(NOTIFICATIONS)
-                            # print(reader)
                             difference = len(reader) - len(NOTIFICATIONS)
                             temp_list = []
                             for i in range(difference):
@@ -81,7 +76,6 @@ class SafeEntry:
 
                             # send request to server to delete user nric from server's notification list
                             self.notification_stub.DeleteUserFromNotiList(safeentry_pb2.Request(message = NRIC))
-                
         
     def run(self):
         # NOTE(gRPC Python Team): .close() is possible on a channel and should be
@@ -116,7 +110,11 @@ class SafeEntry:
             print("Please Enter Login Credentials.")
             nric = input("Enter {}: ".format(word))
             password = input("Enter Password: ")
-            response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password, role = number))
+            if self.validate_nric(nric):
+                response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password, role = number))
+            else:
+                print("\nInvalid NRIC. Please Try Again!\n")
+                continue
 
             NRIC = nric.upper()
 
@@ -138,9 +136,11 @@ class SafeEntry:
             self.check_notifications(bool)
             print("1) Check In")
             print("2) Check Out")
-            print("3) Show History")
-            print("4) Change Password")
-            print("5) Exit\n")
+            print("3) Group Check In")
+            print("4) Group Check Out")
+            print("5) Show History")
+            print("6) Change Password")
+            print("7) Exit\n")
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
@@ -148,11 +148,14 @@ class SafeEntry:
             elif user_input == '2':
                 self.check_out()
             elif user_input == '3':
-                self.show_history()
+                self.group_check_in()
             elif user_input == '4':
-                self.change_password()
-                exit()
+                self.group_check_out()
             elif user_input == '5':
+                self.show_history()
+            elif user_input == '6':
+                self.change_password()
+            elif user_input == '7':
                 exit()
             else:
                 print("\nInvalid! Please Try Again!\n")
@@ -194,12 +197,6 @@ class SafeEntry:
         else:
             print("\n+++++++++++++++++++++ NO NOTIFICATION +++++++++++++++++++++")
 
-    def validate_nric(self, nric):
-        if (len(nric) == 9 and nric[1:-1].isdigit() and nric[0].isalpha() and nric[-1].isalpha()):
-            return True
-        else:
-            return False
-
     def generate_nric_request(self, request, nric):
         for i, char in enumerate(request):
             if i >= len(nric):
@@ -211,67 +208,23 @@ class SafeEntry:
     def check_in(self):
         while(1):
             print('\n++++++++ CHECKING IN ++++++++\n')
-            print("1) Individual Check In")
-            print("2) Group Check In")
-            print("3) Back\n")
-            user_input = input("Please Select Choice: ")
+            print("List Of Locations: ")
+            self.print_locations()
 
-            if user_input == '1':
-                print("List Of Locations: ")
-                self.print_locations()
+            location_input = input("\nPlease Select Location: ")
+            
+            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+                date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+                response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
-                location_input = input("\nPlease Select Location: ")
-                
-                if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
-                    date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-                    response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
-
-                    if response.status:
-                        print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
-                        self.user_ui()
-                    else:
-                        print('Error! Please Check In Again!\n')
-                        self.check_in()
+                if response.status:
+                    print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                    self.user_ui()
                 else:
-                    print('\nInvalid Input! Please Try Again!\n')
-                    continue
-
-            elif user_input == '2':
-                print("List Of Locations: ")
-                self.print_locations()
-
-                nric_list = []
-                location_input = input("\nPlease Select Location: ")
-                
-                if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
-
-                    number_input = input("\nNumber Of People: ")
-
-                    if number_input.isdigit():
-                        nric_list.append(NRIC)
-                        for x in number_input:
-                            nric_input = input("\nNRIC for Person " + x + ": ")
-                            nric_list.append(nric_input.upper())
-                            
-                        date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-                        response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
-
-                        if response.status:
-                            print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
-                            self.user_ui()
-                        else:
-                            print('Error! Please Check In Again!\n')
-                            self.check_in()
-                    else:
-                        print('\nInvalid Input! Please Try Again!\n')
-                        continue
-                else:
-                    print('\nInvalid Input! Please Try Again!\n')
-                    continue
-            elif user_input == '3':
-                self.user_ui()
+                    print('Error! Please Check In Again!\n')
+                    self.check_in()
             else:
-                print('\nInvalid! Please Try Again!\n')
+                print('\nInvalid Input! Please Try Again!\n')
                 continue
 
     def check_out(self):
@@ -292,6 +245,79 @@ class SafeEntry:
                 else:
                     print('Error! Please Check Out Again!\n')
                     self.check_out()
+            else:
+                print('\nInvalid Input! Please Try Again!\n')
+                continue
+
+    def group_check_in(self):
+        global GROUP_CHECKIN
+        while(1):
+            print('\n++++++++ GROUP CHECK IN ++++++++\n')
+            print("List Of Locations: ")
+            self.print_locations()
+
+            location_input = input("\nPlease Select Location: ")
+            
+            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+
+                while True:
+                    nric_list = []
+                    nric_input = input("\nPlease Enter NRIC: ")
+
+                    if self.validate_nric(nric_input):
+                        nric_list.append(nric_input)
+                    else:
+                        print("\nInvalid NRIC. Please Try Again!\n")
+                        continue
+
+                    print("\nDo you want to add more NRICs? (y/n) ")
+                    user_input = input("\nPlease Input Choice: ")
+
+                    if user_input.lower() == 'y':
+                        continue
+                    elif user_input.lower() == 'n':
+                        GROUP_CHECKIN.clear()
+                        nric_list.append(NRIC)
+                        GROUP_CHECKIN = nric_list
+                        date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+                        response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = GROUP_CHECKIN, location = LOCATIONS[int(location_input)-1], datetime = date_time))
+
+                        if response.status:
+                            print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                            self.user_ui()
+                        else:
+                            print('Error! Please Check In Again!\n')
+                            self.group_check_in()
+                    else:
+                        print('Invalid Input!')
+                        continue
+            else:
+                print('\nInvalid Input! Please Try Again!\n')
+                continue
+
+    def group_check_out(self):
+        global GROUP_CHECKIN
+        while(1):
+            if len(GROUP_CHECKIN) == 0:
+                print("\nPlease Use Group Check In First!")
+                self.user_ui()
+
+            print('\n++++++++ GROUP CHECK OUT ++++++++\n')
+            print("List Of Locations: ")
+            self.print_locations()
+
+            location_input = input("\nPlease Select Location: ")
+            
+            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+                date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+                response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = GROUP_CHECKIN, location = LOCATIONS[int(location_input)-1], datetime = date_time))
+
+                if response.status:
+                    print('Successfully checked out at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                    self.user_ui()
+                else:
+                    print('Error! Please Check Out Again!\n')
+                    self.group_check_out()
             else:
                 print('\nInvalid Input! Please Try Again!\n')
                 continue
@@ -344,29 +370,36 @@ class SafeEntry:
             location_input = input("\nPlease Select Location: ")
             if location_input.strip().isdigit() or int(location_input) <= LOCATIONS.count:
                 nric = input('Enter NRIC: ')
-                date_entry = input('Enter checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
-                is_date = self.check_date_format(date_entry)
-                if is_date:      
-                    d = datetime.strptime(date_entry, "%Y-%m-%d %H:%M")
-                    d = d.strftime('%Y-%m-%dT%H:%M:%S.%f')
-                    
-                    response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = nric, datetime = d))        
-                    if response_location.response == 'success':
-                        n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
-                        n.message = str(response_location.noti_list)  # set the actual message of the declaration
-                        self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
-                        self.officer_ui()
-
+                if self.validate_nric(nric):
+                    date_entry = input('Enter checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
+                    is_date = self.check_date_format(date_entry)
+                    if is_date:      
+                        d = datetime.strptime(date_entry, "%Y-%m-%d %H:%M")
+                        d = d.strftime('%Y-%m-%dT%H:%M:%S.%f')
+                        
+                        response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = nric, datetime = d))        
+                        if response_location.response == 'success':
+                            n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
+                            n.message = str(response_location.noti_list)  # set the actual message of the declaration
+                            self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
+                            self.officer_ui()
+                        else:
+                            print("\nNRIC not found in system!")
                     else:
-                        print("\nNRIC not found in system!")
-                    
-            
+                        print('\nInvalid Input! Please Try Again!\n')
+                        continue
                 else:
-                    print('\nInvalid Input! Please Try Again!\n')
+                    print("\nInvalid NRIC. Please Try Again!\n")
                     continue
             else:
                 print('\nInvalid Input! Please Try Again!\n')
                 continue
+
+    def validate_nric(self, nric):
+        if (len(nric) == 9 and nric[1:-1].isdigit() and nric[0].isalpha() and nric[-1].isalpha()):
+            return True
+        else:
+            return False
 
     def check_date_format(self, date):
         regex = re.compile("[0-9]{4}\-[0-9]{2}\-[0-9]{2}\ [0-9]{2}\:[0-9]{2}")
@@ -375,7 +408,7 @@ class SafeEntry:
         if (match):
             return True
         else: 
-            return False     
+            return False
 
 if __name__ == '__main__':
     logging.basicConfig()
