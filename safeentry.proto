@@ -87,7 +87,7 @@ message get_location_data {
 
 // Response containing the data
 message location {
-  repeated string response = 1;
+  string response = 1;
 }
 
 

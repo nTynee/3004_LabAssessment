@@ -24,6 +24,7 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
+from csv import writer
 from datetime import datetime
 
 input_file = ""
@@ -115,19 +116,36 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
 
         # people within the range of 14 days
         with open("Locations/" + request.location + ".json", 'r') as f:
-            data = json.load(f) 
+            location_data = json.load(f) 
 
-        noti_list = []
-        for i in data:
-            checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')                   
+        with open("Users.json", 'r') as f:
+            user_data = json.load(f) 
+
+        for i in location_data:
+            checkin = datetime.strptime(i["checkin"], '%Y-%m-%dT%H:%M:%S.%f')  
+            checkout = i["checkout"]
+            if checkout != "":
+                checkout = datetime.strptime(checkout, '%Y-%m-%dT%H:%M:%S.%f') 
+                checkout = checkout.strftime('%d/%m/%y %H:%M:%S')  
+            else:
+                checkout = "NA"                
             difference = (infected_checkin - checkin).days
 
             if difference <= 14 and difference >= -14:
-                #save to a list to return back
-                noti_list.append(i["ic"])
+                #write to csv 
+                data = []
+                for j in user_data: 
+                    if i['ic'] == j['nric']:                        
+                        data.append("Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout))
+
+                        with open("Notification/" + i['ic'] + ".csv", 'a+', newline = '') as f:
+                            csv_writer = writer(f)
+                            csv_writer.writerow(data)
+
+                        break
         
         print("Declaring location...")
-        return safeentry_pb2.location(response=noti_list)
+        return safeentry_pb2.location(response="success")
 
 
 class Password(safeentry_pb2_grpc.PaswordSettingServicer):

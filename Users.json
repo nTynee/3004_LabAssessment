@@ -1,1 +1,22 @@
-[{"nric": "S9123456A", "password": "12", "name": "Mary Tan"}, {"nric": "S9987654A", "password": "123", "name": "Ben Tan"}, {"nric": "S8732423G", "password": "123", "name": "Patrick Lim"}]
+[
+    {
+        "nric": "S9123456A",
+        "password": "12",
+        "name": "Mary Tan"
+    },
+    {
+        "nric": "S9987654A",
+        "password": "123",
+        "name": "Ben Tan"
+    },
+    {
+        "nric": "S8732423G",
+        "password": "123",
+        "name": "Patrick Lim"
+    },
+    {
+        "nric": "S9693424H",
+        "password": "123",
+        "name": "Alicia Tan"
+    }
+]

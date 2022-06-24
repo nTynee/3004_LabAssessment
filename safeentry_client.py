@@ -311,21 +311,24 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
             if location_input.strip().isdigit() or int(location_input) <= LOCATIONS.count:
+                nric = input('Enter NRIC: ')
                 date_entry = input('Enter checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
                 is_date = self.check_date_format(date_entry)
                 if is_date:      
                     d = datetime.strptime(date_entry, "%Y-%m-%d %H:%M")
                     d = d.strftime('%Y-%m-%dT%H:%M:%S.%f')
                     
-                    response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = "S9123456A", datetime = d))        
-                    print(str(response_location.response))
-                    
-                    if str(response_location.response) != '':
+                    response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = nric, datetime = d))        
+                    if response_location.response == 'success':
                         n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
                         n.message = str(response_location.response)  # set the actual message of the declaration
                         self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
+                        self.officer_ui()
 
-                    self.officer_ui()
+                    else:
+                        print("\nNRIC not found in system!")
+                    
+            
                 else:
                     print('\nInvalid Input! Please Try Again!\n')
                     continue
