@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1c\n\nStatusInfo\x12\x0e\n\x06status\x18\x01 \x01(\t\"y\n\x0eStatusResponse\x12\x39\n\x06status\x18\x01 \x01(\x0e\x32).SafeEntry.StatusResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"\x1b\n\x0bNRICRequest\x12\x0c\n\x04nric\x18\x01 \x01(\t\"@\n\x0c\x43heckRequest\x12\x0c\n\x04nric\x18\x01 \x03(\t\x12\x10\n\x08location\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\t\"\x1f\n\rCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\"E\n\x11get_location_data\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\t\"\x1c\n\x08location\x12\x10\n\x08response\x18\x01 \x01(\t\" \n\x10get_user_history\x12\x0c\n\x04nric\x18\x01 \x01(\t\"D\n\rHistoryRecord\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x02 \x01(\t\x12\x10\n\x08\x63heckout\x18\x03 \x01(\t\"<\n\x0ehistory_record\x12*\n\x08response\x18\x01 \x03(\x0b\x32\x18.SafeEntry.HistoryRecord\"H\n\x0cget_password\x12\x14\n\x0cold_password\x18\x01 \x01(\t\x12\x14\n\x0cnew_password\x18\x02 \x01(\t\x12\x0c\n\x04nric\x18\x03 \x01(\t\"\x1c\n\x08password\x12\x10\n\x08response\x18\x01 \x01(\t\"1\n\x10get_notification\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\"\x1c\n\tnoti_info\x12\x0f\n\x07message\x18\x01 \x01(\t\"\"\n\x0f\x44\x65\x63larationInfo\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x07\n\x05\x45mpty\"F\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\x05\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\xb3\x02\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12\x35\n\x05Login\x12\x13.SafeEntry.UserInfo\x1a\x15.SafeEntry.StatusInfo\"\x00\x12>\n\x07\x43heckIn\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12?\n\x08\x43heckOut\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12;\n\x05\x43heck\x12\x15.SafeEntry.StatusInfo\x1a\x19.SafeEntry.StatusResponse\"\x00\x32\xa4\x01\n\x0cLocationData\x12\x46\n\x0f\x44\x65\x63lareLocation\x12\x1c.SafeEntry.get_location_data\x1a\x13.SafeEntry.location\"\x00\x12L\n\x10GetHistoryRecord\x12\x1b.SafeEntry.get_user_history\x1a\x19.SafeEntry.history_record\"\x00\x32R\n\x0ePaswordSetting\x12@\n\x0e\x43hangePassword\x12\x17.SafeEntry.get_password\x1a\x13.SafeEntry.password\"\x00\x32\x9a\x01\n\x0cNotification\x12\x44\n\x10SendNotification\x12\x10.SafeEntry.Empty\x1a\x1a.SafeEntry.DeclarationInfo\"\x00\x30\x01\x12\x44\n\x12ReceiveDeclaration\x12\x1a.SafeEntry.DeclarationInfo\x1a\x10.SafeEntry.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fsafeentry.proto\x12\tSafeEntry\"\x1a\n\x07Request\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x18\n\x05Reply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1c\n\nStatusInfo\x12\x0e\n\x06status\x18\x01 \x01(\t\"y\n\x0eStatusResponse\x12\x39\n\x06status\x18\x01 \x01(\x0e\x32).SafeEntry.StatusResponse.SafeEntryStatus\",\n\x0fSafeEntryStatus\x12\x0b\n\x07\x43HECKIN\x10\x00\x12\x0c\n\x08\x43HECKOUT\x10\x01\"\x1b\n\x0bNRICRequest\x12\x0c\n\x04nric\x18\x01 \x01(\t\"@\n\x0c\x43heckRequest\x12\x0c\n\x04nric\x18\x01 \x03(\t\x12\x10\n\x08location\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\t\"\x1f\n\rCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\x08\"E\n\x11get_location_data\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x03 \x01(\t\"/\n\x08location\x12\x10\n\x08response\x18\x01 \x01(\t\x12\x11\n\tnoti_list\x18\x02 \x03(\t\" \n\x10get_user_history\x12\x0c\n\x04nric\x18\x01 \x01(\t\"D\n\rHistoryRecord\x12\x10\n\x08location\x18\x01 \x01(\t\x12\x0f\n\x07\x63heckin\x18\x02 \x01(\t\x12\x10\n\x08\x63heckout\x18\x03 \x01(\t\"<\n\x0ehistory_record\x12*\n\x08response\x18\x01 \x03(\x0b\x32\x18.SafeEntry.HistoryRecord\"H\n\x0cget_password\x12\x14\n\x0cold_password\x18\x01 \x01(\t\x12\x14\n\x0cnew_password\x18\x02 \x01(\t\x12\x0c\n\x04nric\x18\x03 \x01(\t\"\x1c\n\x08password\x12\x10\n\x08response\x18\x01 \x01(\t\"1\n\x10get_notification\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0c\n\x04nric\x18\x02 \x01(\t\"\x1c\n\tnoti_info\x12\x0f\n\x07message\x18\x01 \x01(\t\"\"\n\x0f\x44\x65\x63larationInfo\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x07\n\x05\x45mpty\"F\n\x08UserInfo\x12\x0c\n\x04nric\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\x05\"1\n\x0cUserInfoDict\x12!\n\x04info\x18\x01 \x03(\x0b\x32\x13.SafeEntry.UserInfo2\xb3\x02\n\tSafeEntry\x12\x31\n\x07Message\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Reply\"\x00\x12\x35\n\x05Login\x12\x13.SafeEntry.UserInfo\x1a\x15.SafeEntry.StatusInfo\"\x00\x12>\n\x07\x43heckIn\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12?\n\x08\x43heckOut\x12\x17.SafeEntry.CheckRequest\x1a\x18.SafeEntry.CheckResponse\"\x00\x12;\n\x05\x43heck\x12\x15.SafeEntry.StatusInfo\x1a\x19.SafeEntry.StatusResponse\"\x00\x32\xa4\x01\n\x0cLocationData\x12\x46\n\x0f\x44\x65\x63lareLocation\x12\x1c.SafeEntry.get_location_data\x1a\x13.SafeEntry.location\"\x00\x12L\n\x10GetHistoryRecord\x12\x1b.SafeEntry.get_user_history\x1a\x19.SafeEntry.history_record\"\x00\x32R\n\x0ePaswordSetting\x12@\n\x0e\x43hangePassword\x12\x17.SafeEntry.get_password\x1a\x13.SafeEntry.password\"\x00\x32\xdc\x01\n\x0cNotification\x12\x44\n\x10SendNotification\x12\x10.SafeEntry.Empty\x1a\x1a.SafeEntry.DeclarationInfo\"\x00\x30\x01\x12\x44\n\x12ReceiveDeclaration\x12\x1a.SafeEntry.DeclarationInfo\x1a\x10.SafeEntry.Empty\"\x00\x12@\n\x16\x44\x65leteUserFromNotiList\x12\x12.SafeEntry.Request\x1a\x10.SafeEntry.Empty\"\x00\x62\x06proto3')
 
 
 
@@ -205,35 +205,35 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _GET_LOCATION_DATA._serialized_start=365
   _GET_LOCATION_DATA._serialized_end=434
   _LOCATION._serialized_start=436
-  _LOCATION._serialized_end=464
-  _GET_USER_HISTORY._serialized_start=466
-  _GET_USER_HISTORY._serialized_end=498
-  _HISTORYRECORD._serialized_start=500
-  _HISTORYRECORD._serialized_end=568
-  _HISTORY_RECORD._serialized_start=570
-  _HISTORY_RECORD._serialized_end=630
-  _GET_PASSWORD._serialized_start=632
-  _GET_PASSWORD._serialized_end=704
-  _PASSWORD._serialized_start=706
-  _PASSWORD._serialized_end=734
-  _GET_NOTIFICATION._serialized_start=736
-  _GET_NOTIFICATION._serialized_end=785
-  _NOTI_INFO._serialized_start=787
-  _NOTI_INFO._serialized_end=815
-  _DECLARATIONINFO._serialized_start=817
-  _DECLARATIONINFO._serialized_end=851
-  _EMPTY._serialized_start=853
-  _EMPTY._serialized_end=860
-  _USERINFO._serialized_start=862
-  _USERINFO._serialized_end=932
-  _USERINFODICT._serialized_start=934
-  _USERINFODICT._serialized_end=983
-  _SAFEENTRY._serialized_start=986
-  _SAFEENTRY._serialized_end=1293
-  _LOCATIONDATA._serialized_start=1296
-  _LOCATIONDATA._serialized_end=1460
-  _PASWORDSETTING._serialized_start=1462
-  _PASWORDSETTING._serialized_end=1544
-  _NOTIFICATION._serialized_start=1547
-  _NOTIFICATION._serialized_end=1701
+  _LOCATION._serialized_end=483
+  _GET_USER_HISTORY._serialized_start=485
+  _GET_USER_HISTORY._serialized_end=517
+  _HISTORYRECORD._serialized_start=519
+  _HISTORYRECORD._serialized_end=587
+  _HISTORY_RECORD._serialized_start=589
+  _HISTORY_RECORD._serialized_end=649
+  _GET_PASSWORD._serialized_start=651
+  _GET_PASSWORD._serialized_end=723
+  _PASSWORD._serialized_start=725
+  _PASSWORD._serialized_end=753
+  _GET_NOTIFICATION._serialized_start=755
+  _GET_NOTIFICATION._serialized_end=804
+  _NOTI_INFO._serialized_start=806
+  _NOTI_INFO._serialized_end=834
+  _DECLARATIONINFO._serialized_start=836
+  _DECLARATIONINFO._serialized_end=870
+  _EMPTY._serialized_start=872
+  _EMPTY._serialized_end=879
+  _USERINFO._serialized_start=881
+  _USERINFO._serialized_end=951
+  _USERINFODICT._serialized_start=953
+  _USERINFODICT._serialized_end=1002
+  _SAFEENTRY._serialized_start=1005
+  _SAFEENTRY._serialized_end=1312
+  _LOCATIONDATA._serialized_start=1315
+  _LOCATIONDATA._serialized_end=1479
+  _PASWORDSETTING._serialized_start=1481
+  _PASWORDSETTING._serialized_end=1563
+  _NOTIFICATION._serialized_start=1566
+  _NOTIFICATION._serialized_end=1786
 # @@protoc_insertion_point(module_scope)

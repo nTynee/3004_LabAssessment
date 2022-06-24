@@ -29,6 +29,7 @@ from datetime import datetime
 
 input_file = ""
 client_list = []
+noti_list = []
 
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
@@ -135,7 +136,9 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                 #write to csv 
                 data = []
                 for j in user_data: 
-                    if i['ic'] == j['nric']:                        
+                    if i['ic'] == j['nric']:
+                        #save to a global list to return back
+                        noti_list.append(i["ic"])                      
                         data.append("Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout))
 
                         with open("Notification/" + i['ic'] + ".csv", 'a+', newline = '') as f:
@@ -145,7 +148,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                         break
         
         print("Declaring location...")
-        return safeentry_pb2.location(response="success")
+        return safeentry_pb2.location(response='success', noti_list=noti_list)
 
 
 class Password(safeentry_pb2_grpc.PaswordSettingServicer):
@@ -171,8 +174,8 @@ class Password(safeentry_pb2_grpc.PaswordSettingServicer):
 class Notification(safeentry_pb2_grpc.NotificationServicer):
 
     def __init__(self):
-        # List with all the notification history
-        self.notifications = []
+        # # List with all the notification history
+        self.notification = ''
 
     # The stream which will be used to send new notifications to clients
     def SendNotification(self, request_iterator, context):
@@ -181,13 +184,12 @@ class Notification(safeentry_pb2_grpc.NotificationServicer):
         Every client opens this connection and waits for server to send new messages.
         """
         lastindex = 0
+        previous_notification = ''
         # For every client a infinite loop starts (in gRPC's own managed thread)
         while True:
-            # Check if there are any new messages
-            while len(self.notifications) > lastindex:
-                n = self.notifications[lastindex]
-                lastindex += 1
-                yield n
+            if self.notification != previous_notification:
+                previous_notification = self.notification
+                yield self.notification
     
     def ReceiveDeclaration(self, request: safeentry_pb2.DeclarationInfo, context):
         """
@@ -195,9 +197,15 @@ class Notification(safeentry_pb2_grpc.NotificationServicer):
         """
         # this is only for the server console
         print("[{}]".format(request.message))
-        # Add it to the notifcation history
-        self.notifications.append(request)
+        self.notification = request
         return safeentry_pb2.Empty()
+
+    def DeleteUserFromNotiList(self, request, context):
+        for x in noti_list:
+            if x == request.message:
+                noti_list.remove(request.message)
+        return safeentry_pb2.Empty()
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -214,8 +222,3 @@ def serve():
 if __name__ == '__main__':
     logging.basicConfig()    
     serve()
-    # Server starts in background (in another thread) so keep waiting
-    # if we don't wait here the main thread will end, which will end all the child threads, and thus the threads
-    # from the server won't continue to work and stop the server
-    while True:
-        time.sleep(64 * 64 * 100)

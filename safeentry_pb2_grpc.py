@@ -375,6 +375,11 @@ class NotificationStub(object):
                 request_serializer=safeentry__pb2.DeclarationInfo.SerializeToString,
                 response_deserializer=safeentry__pb2.Empty.FromString,
                 )
+        self.DeleteUserFromNotiList = channel.unary_unary(
+                '/SafeEntry.Notification/DeleteUserFromNotiList',
+                request_serializer=safeentry__pb2.Request.SerializeToString,
+                response_deserializer=safeentry__pb2.Empty.FromString,
+                )
 
 
 class NotificationServicer(object):
@@ -392,6 +397,12 @@ class NotificationServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteUserFromNotiList(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NotificationServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -403,6 +414,11 @@ def add_NotificationServicer_to_server(servicer, server):
             'ReceiveDeclaration': grpc.unary_unary_rpc_method_handler(
                     servicer.ReceiveDeclaration,
                     request_deserializer=safeentry__pb2.DeclarationInfo.FromString,
+                    response_serializer=safeentry__pb2.Empty.SerializeToString,
+            ),
+            'DeleteUserFromNotiList': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteUserFromNotiList,
+                    request_deserializer=safeentry__pb2.Request.FromString,
                     response_serializer=safeentry__pb2.Empty.SerializeToString,
             ),
     }
@@ -445,6 +461,23 @@ class Notification(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/SafeEntry.Notification/ReceiveDeclaration',
             safeentry__pb2.DeclarationInfo.SerializeToString,
+            safeentry__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteUserFromNotiList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.Notification/DeleteUserFromNotiList',
+            safeentry__pb2.Request.SerializeToString,
             safeentry__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -15,12 +15,15 @@
 
 from __future__ import print_function
 from cgi import test
+import csv
 
 import logging
 import sys
 import time
 
 import grpc
+from nbformat import read
+from numpy import empty
 import safeentry_pb2
 import safeentry_pb2_grpc
 
@@ -49,14 +52,35 @@ class SafeEntry:
         This method will be ran in a separate thread as the main/ui thread, because the for-in call is blocking
         when waiting for new messages
         """
+        global NOTIFICATIONS
         for notification in self.notification_stub.SendNotification(safeentry_pb2.Empty()):  # this line will wait for new messages from the server!
-            # 
-            NOTIFICATIONS.append(notification.message)
-            # TODO if user's NRIC is within the list, compare it and print specific message
-            for x in NOTIFICATIONS:
-                print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
-                print (x)
-                print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            #print(notification.message)
+            if NRIC != '':
+                if NRIC in notification.message:
+                    #print("aaaaa")
+                    file = 'Notification/' + NRIC + '.csv'
+        
+                    with open(file, 'r', encoding='UTF8') as f:
+                        reader = list(csv.reader(f))
+                        if NOTIFICATIONS != reader:
+                            # print(NOTIFICATIONS)
+                            # print(reader)
+                            difference = len(reader) - len(NOTIFICATIONS)
+                            temp_list = []
+                            for i in range(difference):
+                                NOTIFICATIONS.append(reader[-i])
+                                temp_list.append(reader[-i])
+
+                            # prints new notifications
+                            print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
+                            for x in temp_list:
+                                print (x)
+                            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+                            temp_list.clear()
+
+                            # send request to server to delete user nric from server's notification list
+                            self.notification_stub.DeleteUserFromNotiList(safeentry_pb2.Request(message = NRIC))
                 
         
     def run(self):
@@ -107,7 +131,11 @@ class SafeEntry:
     
     def user_ui(self):
         while(1):
-            print("\nWelcome!\n")
+            print("\nWelcome!")
+            # get notifications from folder
+            bool = self.store_notifications()
+            # print notifications from folder
+            self.check_notifications(bool)
             print("1) Check In")
             print("2) Check Out")
             print("3) Show History")
@@ -144,29 +172,33 @@ class SafeEntry:
                 print("\nInvalid! Please Try Again!\n")
                 continue
 
+    def store_notifications(self):
+        file = NRIC + '.csv'
+    
+        for x in os.listdir('Notification'):
+            if x == file:
+                path = 'Notification/' + x
+                with open(path, 'r', encoding='UTF8') as f:
+                    reader = csv.reader(f)
+                    for notification in reader:
+                        NOTIFICATIONS.append(notification)
+                return True
+        return False
+    
+    def check_notifications(self, bool):
+        if bool and len(NOTIFICATIONS) != 0:
+            print("\n+++++++++++++++++++++ NOTIFICATIONS +++++++++++++++++++++")
+            for x in NOTIFICATIONS:
+                print (x)
+            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        else:
+            print("\n+++++++++++++++++++++ NO NOTIFICATION +++++++++++++++++++++")
+
     def validate_nric(self, nric):
         if (len(nric) == 9 and nric[1:-1].isdigit() and nric[0].isalpha() and nric[-1].isalpha()):
             return True
         else:
             return False
-
-    def get_notification(self):
-        """ Bidirectional Streaming """
-        responses = self.notification_stub.SendNotification(self.generate_nric_request(" USER NRIC = ", NRIC))
-        message_reponse = ''
-        for response in responses: 
-            message_reponse += response.message
-
-        print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
-        print("\t\t Client received : " + message_reponse)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-    def test(self):
-        message = input("enter words: ")  # retrieve message from the UI
-        if message != '':
-            n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
-            n.message = message  # set the actual message of the declaration
-            self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
 
     def generate_nric_request(self, request, nric):
         for i, char in enumerate(request):
@@ -321,7 +353,7 @@ class SafeEntry:
                     response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = nric, datetime = d))        
                     if response_location.response == 'success':
                         n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
-                        n.message = str(response_location.response)  # set the actual message of the declaration
+                        n.message = str(response_location.noti_list)  # set the actual message of the declaration
                         self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
                         self.officer_ui()
 

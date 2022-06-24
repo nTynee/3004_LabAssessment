@@ -36,7 +36,8 @@ service PaswordSetting {
 
 service Notification {
   rpc SendNotification (Empty) returns (stream DeclarationInfo) {}
-  rpc ReceiveDeclaration(DeclarationInfo) returns (Empty){}
+  rpc ReceiveDeclaration(DeclarationInfo) returns (Empty) {}
+  rpc DeleteUserFromNotiList(Request) returns (Empty) {}
 }
 
 // The request message containing the request
@@ -88,6 +89,7 @@ message get_location_data {
 // Response containing the data
 message location {
   string response = 1;
+  repeated string noti_list = 2;
 }
 
 
