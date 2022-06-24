@@ -39,6 +39,7 @@ class SafeEntry:
         self.safe_entry_stub = safeentry_pb2_grpc.SafeEntryStub(self.channel)
         self.location_stub = safeentry_pb2_grpc.LocationDataStub(self.channel)
         self.notification_stub = safeentry_pb2_grpc.NotificationStub(self.channel)
+        self.password_stub = safeentry_pb2_grpc.PaswordSettingStub(self.channel)
 
         # create new listening thread for when new message streams come in
         threading.Thread(target=self.__listen_for_messages, daemon=True).start()
@@ -110,7 +111,7 @@ class SafeEntry:
             print("1) Check In")
             print("2) Check Out")
             print("3) Show History")
-            print("4) Edit User Details")
+            print("4) Change Password")
             print("5) Exit\n")
             user_input = input("Please Select Choice: ")
 
@@ -121,7 +122,7 @@ class SafeEntry:
             elif user_input == '3':
                 self.show_history()
             elif user_input == '4':
-                #TODO add function here :D
+                self.change_password()
                 exit()
             elif user_input == '5':
                 exit()
@@ -261,6 +262,28 @@ class SafeEntry:
                     self.check_out()
             else:
                 print('\nInvalid Input! Please Try Again!\n')
+                continue
+
+    def change_password(self):
+        while(1):
+            print('\n++++++++ CHANGE PASSWORD ++++++++\n')
+            old_password = input("Please Input Current Password: ")
+            new_password = input("\nPlease Input New Password: ")
+            confirm = input("\nConfirm? (y/n): ")
+
+            if confirm.lower() == 'y':
+                response = self.password_stub.ChangePassword(safeentry_pb2.get_password(nric = NRIC, old_password = old_password, new_password = new_password))
+                if response.response == 'success':
+                    print('You have successfully changed your password!')
+                    self.user_ui()
+                elif response.response == 'error1':
+                    print('New password must be different from your current password!')
+                else:
+                    print('Wrong password!')
+            elif confirm.lower() == 'n':
+                self.change_password()
+            else:
+                print('Invalid Input!')
                 continue
 
     def store_locations(self):

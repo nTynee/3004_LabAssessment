@@ -30,6 +30,10 @@ service LocationData {
   rpc GetHistoryRecord (get_user_history) returns (history_record) {}
 }
 
+service PaswordSetting {
+  rpc ChangePassword (get_password) returns (password) {}
+}
+
 service Notification {
   rpc SendNotification (Empty) returns (stream DeclarationInfo) {}
   rpc ReceiveDeclaration(DeclarationInfo) returns (Empty){}
@@ -102,6 +106,19 @@ message HistoryRecord {
 message history_record {
   repeated HistoryRecord response = 1;
 }
+
+
+// Change password
+message get_password {
+  string old_password = 1;
+  string new_password = 2;
+  string nric = 3;
+}
+
+message password {
+  string response = 1;
+}
+
 
 
 // Notification 

@@ -41,9 +41,8 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric == i['nric'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')
-                else:
-                    print("error")
-                    return safeentry_pb2.StatusInfo(status = 'error')
+            print("error")
+            return safeentry_pb2.StatusInfo(status = 'error')
 
         elif request.role == 2:
             with open("Officers.json", 'r') as f:
@@ -51,9 +50,8 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric.lower() == i['email'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')  
-                else:
-                    print("error")
-                    return safeentry_pb2.StatusInfo(status = 'error')
+            print("error")
+            return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
         with open("Locations/" + request.location + ".json") as f:
@@ -130,7 +128,26 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         
         print("Declaring location...")
         return safeentry_pb2.location(response=noti_list)
-        
+
+
+class Password(safeentry_pb2_grpc.PaswordSettingServicer):
+
+    def ChangePassword(self, request, context):
+        print("Retrieving password details...")
+
+        with open("Users.json", 'r') as f:
+            data = json.load(f)     
+
+        for i in data:        
+            if request.nric == i['nric']:
+                if request.old_password == i['password'] and request.new_password != i['password']:
+                    i['password'] = request.new_password
+                    with open("Users.json", 'w') as f:
+                        json.dump(data, f)            
+                    return safeentry_pb2.password(response="success")   
+                elif request.new_password == i['password']:
+                    return safeentry_pb2.password(response="error1")
+        return safeentry_pb2.password(response="error2")
 
 
 class Notification(safeentry_pb2_grpc.NotificationServicer):
@@ -169,6 +186,7 @@ def serve():
     safeentry_pb2_grpc.add_SafeEntryServicer_to_server(SafeEntry(), server)
     safeentry_pb2_grpc.add_LocationDataServicer_to_server(Location(), server)
     safeentry_pb2_grpc.add_NotificationServicer_to_server(Notification(), server)
+    safeentry_pb2_grpc.add_PaswordSettingServicer_to_server(Password(), server)
 
     server.add_insecure_port('[::]:50051')
     server.start()
