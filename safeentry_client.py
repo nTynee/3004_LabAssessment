@@ -167,7 +167,7 @@ class SafeEntry:
                         nric_list.append(NRIC)
                         for x in number_input:
                             nric_input = input("\nNRIC for Person " + x + ": ")
-                            nric_list.append(nric_input.upper)
+                            nric_list.append(nric_input.upper())
                             
                         date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
                         response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
