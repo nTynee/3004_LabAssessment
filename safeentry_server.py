@@ -56,32 +56,29 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                     return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
-        dict = {
-            "ic" : request.nric,
-            "checkin" : request.datetime,
-            "checkout" : "",
-            "infected" : "F"
-        }
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
+        
+        for i in request.nric:
 
-        data.append(dict)
+            dict = {
+                "ic" : i,
+                "checkin" : request.datetime,
+                "checkout" : "",
+                "infected" : "F"
+            }    
+            data.append(dict)
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
-            check_bool = True
+        check_bool = True
         
         if check_bool:
-            print(request.nric + ' has successfully checked in at ' + request.location + ' during ' + request.datetime)
+            for i in request.nric: 
+                print(i + ' has successfully checked in at ' + request.location + ' during ' + request.datetime)
         return safeentry_pb2.CheckResponse(status = check_bool)
 
     def CheckOut(self, request, context):
-        dict = {
-            "ic" : request.nric,
-            "checkin" : request.datetime,
-            "checkout" : "",
-            "infected" : "F"
-        }
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
 
