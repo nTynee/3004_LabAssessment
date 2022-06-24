@@ -304,17 +304,28 @@ class NotificationStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SendNotification = channel.stream_stream(
+        self.SendNotification = channel.unary_stream(
                 '/SafeEntry.Notification/SendNotification',
-                request_serializer=safeentry__pb2.get_notification.SerializeToString,
-                response_deserializer=safeentry__pb2.noti_info.FromString,
+                request_serializer=safeentry__pb2.Empty.SerializeToString,
+                response_deserializer=safeentry__pb2.DeclarationInfo.FromString,
+                )
+        self.ReceiveDeclaration = channel.unary_unary(
+                '/SafeEntry.Notification/ReceiveDeclaration',
+                request_serializer=safeentry__pb2.DeclarationInfo.SerializeToString,
+                response_deserializer=safeentry__pb2.Empty.FromString,
                 )
 
 
 class NotificationServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SendNotification(self, request_iterator, context):
+    def SendNotification(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReceiveDeclaration(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -323,10 +334,15 @@ class NotificationServicer(object):
 
 def add_NotificationServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SendNotification': grpc.stream_stream_rpc_method_handler(
+            'SendNotification': grpc.unary_stream_rpc_method_handler(
                     servicer.SendNotification,
-                    request_deserializer=safeentry__pb2.get_notification.FromString,
-                    response_serializer=safeentry__pb2.noti_info.SerializeToString,
+                    request_deserializer=safeentry__pb2.Empty.FromString,
+                    response_serializer=safeentry__pb2.DeclarationInfo.SerializeToString,
+            ),
+            'ReceiveDeclaration': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReceiveDeclaration,
+                    request_deserializer=safeentry__pb2.DeclarationInfo.FromString,
+                    response_serializer=safeentry__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -339,7 +355,7 @@ class Notification(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SendNotification(request_iterator,
+    def SendNotification(request,
             target,
             options=(),
             channel_credentials=None,
@@ -349,8 +365,25 @@ class Notification(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/SafeEntry.Notification/SendNotification',
-            safeentry__pb2.get_notification.SerializeToString,
-            safeentry__pb2.noti_info.FromString,
+        return grpc.experimental.unary_stream(request, target, '/SafeEntry.Notification/SendNotification',
+            safeentry__pb2.Empty.SerializeToString,
+            safeentry__pb2.DeclarationInfo.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ReceiveDeclaration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/SafeEntry.Notification/ReceiveDeclaration',
+            safeentry__pb2.DeclarationInfo.SerializeToString,
+            safeentry__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

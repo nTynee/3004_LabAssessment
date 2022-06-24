@@ -14,8 +14,11 @@
 """The Python implementation of the GRPC helloworld.Greeter client."""
 
 from __future__ import print_function
+from cgi import test
 
 import logging
+import sys
+import time
 
 import grpc
 import safeentry_pb2
@@ -23,10 +26,12 @@ import safeentry_pb2_grpc
 
 import re
 from datetime import date, datetime
+import threading
 import os
 
 NRIC = ''
-LOCATIONS = [] 
+LOCATIONS = []
+NOTIFICATIONS = []
 
 class SafeEntry: 
     def __init__(self) -> None:
@@ -34,15 +39,30 @@ class SafeEntry:
         self.safe_entry_stub = safeentry_pb2_grpc.SafeEntryStub(self.channel)
         self.location_stub = safeentry_pb2_grpc.LocationDataStub(self.channel)
         self.notification_stub = safeentry_pb2_grpc.NotificationStub(self.channel)
+
+        # create new listening thread for when new message streams come in
+        threading.Thread(target=self.__listen_for_messages, daemon=True).start()
+
+    def __listen_for_messages(self):
+        """
+        This method will be ran in a separate thread as the main/ui thread, because the for-in call is blocking
+        when waiting for new messages
+        """
+        for notification in self.notification_stub.SendNotification(safeentry_pb2.Empty()):  # this line will wait for new messages from the server!
+            # 
+            NOTIFICATIONS.append(notification.message)
+            # TODO if user's NRIC is within the list, compare it and print specific message
+            for x in NOTIFICATIONS:
+                print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
+                print (x)
+                print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                
         
     def run(self):
         # NOTE(gRPC Python Team): .close() is possible on a channel and should be
         # used in circumstances in which the with statement does not fit the needs
         # of the code.
         response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
-
-        # test = self.notification_stub.SendNotification(safeentry_pb2.get_notification())
-        # print(str(test.response))
 
         while(1):
             # get locations from folder
@@ -62,13 +82,13 @@ class SafeEntry:
             elif user_input == '3':
                 exit()
             else:
-                print('\nInvalid! Please Try Again!\n')
+                print("\nInvalid! Please Try Again!\n")
                 continue
     
     def login(self, number, word):
         global NRIC
         while(1):
-            print('Please Enter Login Credentials.')
+            print("Please Enter Login Credentials.")
             nric = input("Enter {}: ".format(word))
             password = input("Enter Password: ")
             response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password, role = number))
@@ -81,12 +101,11 @@ class SafeEntry:
                 elif number == 2:
                     self.officer_ui()
             else:
-                print('\nError Logging In. Please Try Again!\n')
+                print("\nError Logging In. Please Try Again!\n")
                 continue
     
     def user_ui(self):
         while(1):
-            # TODO: if there's notification, show the message
             print("\nWelcome!\n")
             print("1) Check In")
             print("2) Check Out")
@@ -107,7 +126,7 @@ class SafeEntry:
             elif user_input == '5':
                 exit()
             else:
-                print('\nInvalid! Please Try Again!\n')
+                print("\nInvalid! Please Try Again!\n")
                 continue
 
     def officer_ui(self):
@@ -121,8 +140,40 @@ class SafeEntry:
             elif user_input == '2':
                 exit()
             else:
-                print('\nInvalid! Please Try Again!\n')
+                print("\nInvalid! Please Try Again!\n")
                 continue
+
+    def validate_nric(self, nric):
+        if (len(nric) == 9 and nric[1:-1].isdigit() and nric[0].isalpha() and nric[-1].isalpha()):
+            return True
+        else:
+            return False
+
+    def get_notification(self):
+        """ Bidirectional Streaming """
+        responses = self.notification_stub.SendNotification(self.generate_nric_request(" USER NRIC = ", NRIC))
+        message_reponse = ''
+        for response in responses: 
+            message_reponse += response.message
+
+        print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
+        print("\t\t Client received : " + message_reponse)
+        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+    def test(self):
+        message = input("enter words: ")  # retrieve message from the UI
+        if message != '':
+            n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
+            n.message = message  # set the actual message of the declaration
+            self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
+
+    def generate_nric_request(self, request, nric):
+        for i, char in enumerate(request):
+            if i >= len(nric):
+                temp_nric = "" 
+            else:
+                temp_nric = nric[i]
+            yield safeentry_pb2.get_notification(message=char, nric = temp_nric)
 
     def check_in(self):
         while(1):
@@ -245,6 +296,12 @@ class SafeEntry:
                     
                     response_location = self.location_stub.DeclareLocation(safeentry_pb2.get_location_data(location = LOCATIONS[int(location_input)-1], nric = "S9123456A", datetime = d))        
                     print(str(response_location.response))
+                    
+                    if str(response_location.response) != '':
+                        n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
+                        n.message = str(response_location.response)  # set the actual message of the declaration
+                        self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
+
                     self.officer_ui()
                 else:
                     print('\nInvalid Input! Please Try Again!\n')

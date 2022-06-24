@@ -16,6 +16,7 @@
 from concurrent import futures
 import logging
 import threading
+import time
 
 import grpc
 from numpy import diff
@@ -26,6 +27,7 @@ import json
 from datetime import datetime
 
 input_file = ""
+client_list = []
 
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
@@ -136,11 +138,34 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
 
 class Notification(safeentry_pb2_grpc.NotificationServicer):
 
-    def SendNotification(self, request, context):
-        return safeentry_pb2.noti_info(response="testtttt")
-        
+    def __init__(self):
+        # List with all the notification history
+        self.notifications = []
 
-
+    # The stream which will be used to send new notifications to clients
+    def SendNotification(self, request_iterator, context):
+        """
+        This is a response-stream type call. This means the server can keep sending messages.
+        Every client opens this connection and waits for server to send new messages.
+        """
+        lastindex = 0
+        # For every client a infinite loop starts (in gRPC's own managed thread)
+        while True:
+            # Check if there are any new messages
+            while len(self.notifications) > lastindex:
+                n = self.notifications[lastindex]
+                lastindex += 1
+                yield n
+    
+    def ReceiveDeclaration(self, request: safeentry_pb2.DeclarationInfo, context):
+        """
+        This method is called when a clients sends a Declaration to the server.
+        """
+        # this is only for the server console
+        print("[{}]".format(request.message))
+        # Add it to the notifcation history
+        self.notifications.append(request)
+        return safeentry_pb2.Empty()
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -156,3 +181,8 @@ def serve():
 if __name__ == '__main__':
     logging.basicConfig()    
     serve()
+    # Server starts in background (in another thread) so keep waiting
+    # if we don't wait here the main thread will end, which will end all the child threads, and thus the threads
+    # from the server won't continue to work and stop the server
+    while True:
+        time.sleep(64 * 64 * 100)

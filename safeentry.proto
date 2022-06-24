@@ -26,15 +26,14 @@ service SafeEntry {
 }
 
 service LocationData {
-    rpc DeclareLocation (get_location_data) returns (location) {}
-    rpc GetHistoryRecord (get_user_history) returns (history_record) {}
+  rpc DeclareLocation (get_location_data) returns (location) {}
+  rpc GetHistoryRecord (get_user_history) returns (history_record) {}
 }
 
 service Notification {
-    rpc SendNotification (stream get_notification) returns (stream noti_info) {}
+  rpc SendNotification (Empty) returns (stream DeclarationInfo) {}
+  rpc ReceiveDeclaration(DeclarationInfo) returns (Empty){}
 }
-
-
 
 // The request message containing the request
 message Request {
@@ -56,6 +55,10 @@ message StatusResponse {
     CHECKOUT = 1;
   }
   SafeEntryStatus status = 1;
+}
+
+message NRICRequest {
+  string nric = 1;
 }
 
 // The request message containing the check in/check out details
@@ -103,13 +106,19 @@ message history_record {
 
 // Notification 
 message get_notification {
-  repeated string users_to_noti = 1;
+  string message = 1;
+  string nric = 2;
 }
 
 message noti_info {
-  string response = 1;
+  string message = 1;
 }
 
+message DeclarationInfo {
+  string message = 1;
+}
+
+message Empty {}
 
 message UserInfo {
   string nric = 1;
