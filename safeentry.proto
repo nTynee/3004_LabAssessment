@@ -51,6 +51,7 @@ message Reply {
 
 message StatusInfo {
   string status = 1;
+  string name = 2;
 }
 
 message NRICRequest {
@@ -98,6 +99,7 @@ message HistoryRecord {
 // Response containing the data
 message history_record {
   repeated HistoryRecord response = 1;
+  string status = 2;
 }
 
 // Change password

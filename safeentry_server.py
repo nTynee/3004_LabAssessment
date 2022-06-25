@@ -22,7 +22,6 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
-import csv
 import os
 import pandas as pd
 from csv import writer
@@ -39,18 +38,18 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
     def Login(self, request, context):
         if request.role == 1:
-            with open("Users.json", 'r') as f:
+            with open("Users/Users.json", 'r') as f:
                 data = json.load(f) 
             for i in data:
                 if (request.nric == i['nric'] and request.password == i['password']):
-                    return safeentry_pb2.StatusInfo(status = 'success')
+                    return safeentry_pb2.StatusInfo(status = 'success', name = i['name'])
 
         elif request.role == 2:
-            with open("Officers.json", 'r') as f:
+            with open("Officers/Officers.json", 'r') as f:
                 data = json.load(f) 
             for i in data:
                 if (request.nric.lower() == i['email'] and request.password == i['password']):
-                    return safeentry_pb2.StatusInfo(status = 'success')  
+                    return safeentry_pb2.StatusInfo(status = 'success', name = i['name'])  
 
         print("error")
         return safeentry_pb2.StatusInfo(status = 'error')
@@ -64,16 +63,14 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 dict = {
                     "ic" : i,
                     "checkin" : request.datetime,
-                    "checkout" : "",
-                    "infected" : "F"
+                    "checkout" : ""
                 }    
                 data.insert(0, dict)
         else:
             dict = {
                     "ic" : request.nric[0],
                     "checkin" : request.datetime,
-                    "checkout" : "",
-                    "infected" : "F"
+                    "checkout" : ""
                 }    
             data.insert(0, dict)
         print(data)
@@ -117,9 +114,14 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
     def GetHistoryRecord(self, request, context):
         print("Retrieving history records...")
         print(request.nric)
-        with open(request.nric + ".json", 'r') as f:
-            data = json.load(f)      
-        return safeentry_pb2.history_record(response=data)    
+
+        path = "Records/" + request.nric + ".json"
+        if os.path.exists(path):    
+            with open(path, 'r') as f:
+                data = json.load(f)      
+            return safeentry_pb2.history_record(response=data, status='success')   
+
+        return safeentry_pb2.history_record(response=None, status='error')    
 
     def DeclareLocation(self, request, context):
         print("Retrieving location details...")
@@ -130,7 +132,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         with open("Locations/" + request.location + ".json", 'r') as f:
             location_data = json.load(f) 
 
-        with open("Users.json", 'r') as f:
+        with open("Users/Users.json", 'r') as f:
             user_data = json.load(f) 
 
         for i in location_data:
@@ -174,14 +176,14 @@ class Password(safeentry_pb2_grpc.PaswordSettingServicer):
     def ChangePassword(self, request, context):
         print("Retrieving password details...")
 
-        with open("Users.json", 'r') as f:
+        with open("Users/Users.json", 'r') as f:
             data = json.load(f)     
 
         for i in data:        
             if request.nric == i['nric']:
                 if request.old_password == i['password'] and request.new_password != i['password']:
                     i['password'] = request.new_password
-                    with open("Users.json", 'w') as f:
+                    with open("Users/Users.json", 'w') as f:
                         json.dump(data, f)            
                     return safeentry_pb2.password(response="success")   
                 elif request.new_password == i['password']:

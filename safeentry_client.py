@@ -128,16 +128,16 @@ class SafeEntry:
 
             if response.status == 'success':
                 if number == 1:
-                    self.user_ui()
+                    self.user_ui(response.name)
                 elif number == 2:
-                    self.officer_ui()
+                    self.officer_ui(response.name)
             else:
                 print("\nError Logging In. Please Try Again!\n")
                 continue
     
-    def user_ui(self):
+    def user_ui(self, name):
         while(1):
-            print("\nWelcome!")
+            print("\nWelcome {}!".format(name))
             # get notifications from folder
             bool = self.store_notifications()
             # print notifications from folder
@@ -148,7 +148,7 @@ class SafeEntry:
             print("4) Group Check Out")
             print("5) Show History")
             print("6) Change Password")
-            print("7) Exit\n")
+            print("7) Log Out\n")
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
@@ -164,12 +164,19 @@ class SafeEntry:
             elif user_input == '6':
                 self.change_password()
             elif user_input == '7':
-                exit()
+                confirm = input("Confirm Log Out? (y/n): ")
+                if confirm.lower() == 'y':
+                    print("\n===================================================================================================")
+                    print("See you again!")
+                    print("===================================================================================================\n")
+                    self.run()
+                else:
+                    continue
             else:
                 print("\nInvalid! Please Try Again!\n")
                 continue
 
-    def officer_ui(self):
+    def officer_ui(self, name):
         while(1):
             print("1) Declare Location")
             print("2) Exit\n")
@@ -220,7 +227,7 @@ class SafeEntry:
             self.print_locations()
 
             location_input = input("\nPlease Select Location: ")
-            
+
             if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
                 date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f') 
                 nric_list = []    
@@ -228,7 +235,9 @@ class SafeEntry:
                 response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
+                    print("\n===================================================================================================")
                     print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                    print("===================================================================================================")
                     self.user_ui()
                 else:
                     print('Error! Please Check In Again!\n')
@@ -252,7 +261,9 @@ class SafeEntry:
                 response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
+                    print("\n===================================================================================================")
                     print('Successfully checked out at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                    print("===================================================================================================")
                     self.user_ui()
                 else:
                     print('Error! Please Check Out Again!\n')
@@ -295,7 +306,9 @@ class SafeEntry:
                         response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = GROUP_CHECKIN, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                         if response.status:
+                            print("\n===================================================================================================")
                             print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                            print("===================================================================================================")
                             self.user_ui()
                         else:
                             print('Error! Please Check In Again!\n')
@@ -325,7 +338,9 @@ class SafeEntry:
                 response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = GROUP_CHECKIN, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
+                    print("\n===================================================================================================")
                     print('Successfully checked out at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
+                    print("===================================================================================================")
                     self.user_ui()
                 else:
                     print('Error! Please Check Out Again!\n')
@@ -344,7 +359,9 @@ class SafeEntry:
             if confirm.lower() == 'y':
                 response = self.password_stub.ChangePassword(safeentry_pb2.get_password(nric = NRIC, old_password = old_password, new_password = new_password))
                 if response.response == 'success':
+                    print("\n===================================================================================================")
                     print('You have successfully changed your password!')
+                    print("===================================================================================================")
                     self.user_ui()
                 elif response.response == 'error1':
                     print('New password must be different from your current password!')
@@ -364,14 +381,18 @@ class SafeEntry:
     def print_locations(self):
         i = 1
         for x in LOCATIONS:
-            print(str(i) + ') ' + x)
+            word = re.sub(r"(\w)([A-Z])", r"\1 \2", x)
+            print(str(i) + ') ' + word)
             i+=1
 
     def show_history(self):
         response_history = self.location_stub.GetHistoryRecord(safeentry_pb2.get_user_history(nric = NRIC))    
-        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')        
-        for i in response_history.response:
-            print(i)
+        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')    
+        if response_history.status == "error":
+            print("No Records Found!")    
+        else:
+            for i in response_history.response:
+                print(i)
         exit()
 
     def declare_location(self):
