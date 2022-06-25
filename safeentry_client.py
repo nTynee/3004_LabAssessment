@@ -180,16 +180,25 @@ class SafeEntry:
                 print("\nInvalid! Please Try Again!\n")
                 continue
 
-    def officer_ui(self, name):
+    def officer_ui(self):
         while(1):
+            print("\n+++++++++++++++++++++++++++++++++++++++ MOH +++++++++++++++++++++++++++++++++++++++")
+            print("Hello {}.\n".format(NAME))
             print("1) Declare Location")
-            print("2) Exit\n")
+            print("2) Log Out\n")
             user_input = input("Please Select Choice: ")
 
             if user_input == '1':
                 self.declare_location()
             elif user_input == '2':
-                exit()
+                confirm = input("Confirm Log Out? (y/n): ")
+                if confirm.lower() == 'y':
+                    print("\n===================================================================================================")
+                    print("Signing out...")
+                    print("===================================================================================================\n")
+                    self.run()
+                else:
+                    continue
             else:
                 print("\nInvalid! Please Try Again!\n")
                 continue
@@ -419,6 +428,9 @@ class SafeEntry:
                             n = safeentry_pb2.DeclarationInfo()  # create protobug message (called DeclarationInfo)
                             n.message = str(response_location.noti_list)  # set the actual message of the declaration
                             self.notification_stub.ReceiveDeclaration(n)  # send the DeclarationInfo to the server
+                            print("\n=======================================================================")
+                            print('Location Declared...')
+                            print("=======================================================================")
                             self.officer_ui()
                         else:
                             print("\nNRIC not found in system!")
