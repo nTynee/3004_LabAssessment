@@ -18,5 +18,10 @@
         "nric": "S9693424H",
         "password": "123",
         "name": "Alicia Tan"
+    },
+    {
+        "nric": "S3456325F",
+        "password": "1234",
+        "name": "Bob Lim"
     }
 ]

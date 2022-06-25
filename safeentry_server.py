@@ -22,6 +22,9 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
+import csv
+import os
+import pandas as pd
 from csv import writer
 from datetime import datetime
 
@@ -41,8 +44,6 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric == i['nric'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')
-            print("error")
-            return safeentry_pb2.StatusInfo(status = 'error')
 
         elif request.role == 2:
             with open("Officers.json", 'r') as f:
@@ -50,8 +51,9 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
             for i in data:
                 if (request.nric.lower() == i['email'] and request.password == i['password']):
                     return safeentry_pb2.StatusInfo(status = 'success')  
-            print("error")
-            return safeentry_pb2.StatusInfo(status = 'error')
+
+        print("error")
+        return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
         with open("Locations/" + request.location + ".json") as f:
@@ -132,12 +134,19 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                     if i['ic'] == j['nric']:
                         #save to a global list to return back
                         noti_list.append(i["ic"])                      
-                        data.append("Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout))
+                        data = pd.DataFrame({'Content': ["Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
 
-                        with open("Notification/" + i['ic'] + ".csv", 'a+', newline = '') as f:
-                            csv_writer = writer(f)
-                            csv_writer.writerow(data)
-
+                        #check exists
+                        path = "Notification/" + i['ic'] + ".csv"
+                        exist = os.path.isfile(path)    
+                        if exist:
+                            df = pd.read_csv(path)
+                            df = pd.concat([df, data]).drop_duplicates()
+                            print(df)
+                            df.to_csv(path, mode='w', index=False, header=['Content'])
+                        else:                            
+                            data.to_csv(path, mode='w', index=False, header=['Content'])
+                            
                         break
         
         print("Declaring location...")
