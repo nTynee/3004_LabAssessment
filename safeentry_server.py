@@ -65,7 +65,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 "checkout" : "",
                 "infected" : "F"
             }    
-            data.append(dict)
+            data.insert(0, dict)
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
@@ -80,17 +80,17 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
 
-        for i in data:
-            if i["ic"] == request.nric:
-                i["checkout"] = request.datetime
-                break
+        for x in request.nric:
+            for i in data:
+                if i["ic"] == x:
+                    i["checkout"] = request.datetime
+                    print(x + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+                    break
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
-            check_bool = True
-
-        if check_bool:
-            print(request.nric + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+        check_bool = True
+ 
         return safeentry_pb2.CheckResponse(status = check_bool)
 
 
