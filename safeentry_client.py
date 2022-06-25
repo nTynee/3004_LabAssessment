@@ -108,15 +108,23 @@ class SafeEntry:
         global NRIC
         while(1):
             print("Please Enter Login Credentials.")
-            nric = input("Enter {}: ".format(word))
-            password = input("Enter Password: ")
-            if self.validate_nric(nric):
-                response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = nric.upper(), password = password, role = number))
-            else:
-                print("\nInvalid NRIC. Please Try Again!\n")
-                continue
 
-            NRIC = nric.upper()
+            user_input = input("Enter {}: ".format(word))
+            password = input("Enter Password: ")
+            if number == 1:
+                if self.validate_nric(user_input):
+                    response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = user_input.upper(), password = password, role = number))
+                else:
+                    print("\nInvalid NRIC. Please Try Again!\n")
+                    continue
+            else:
+                if self.validate_email(user_input):
+                    response = self.safe_entry_stub.Login(safeentry_pb2.UserInfo(nric = user_input.lower(), password = password, role = number))
+                else:
+                    print("\nInvalid email. Please Try Again!\n")
+                    continue
+
+            NRIC = user_input.upper()
 
             if response.status == 'success':
                 if number == 1:
@@ -400,6 +408,12 @@ class SafeEntry:
             return True
         else:
             return False
+
+    def validate_email(self, email):
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        if re.fullmatch(regex, email):
+            return True
+        return False
 
     def check_date_format(self, date):
         regex = re.compile("[0-9]{4}\-[0-9]{2}\-[0-9]{2}\ [0-9]{2}\:[0-9]{2}")
