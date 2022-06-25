@@ -59,15 +59,24 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
         
-        for i in request.nric:
-
+        if len(request.nric) > 1:
+            for i in request.nric:
+                dict = {
+                    "ic" : i,
+                    "checkin" : request.datetime,
+                    "checkout" : "",
+                    "infected" : "F"
+                }    
+                data.insert(0, dict)
+        else:
             dict = {
-                "ic" : i,
-                "checkin" : request.datetime,
-                "checkout" : "",
-                "infected" : "F"
-            }    
+                    "ic" : request.nric[0],
+                    "checkin" : request.datetime,
+                    "checkout" : "",
+                    "infected" : "F"
+                }    
             data.insert(0, dict)
+        print(data)
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
@@ -82,12 +91,19 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         with open("Locations/" + request.location + ".json") as f:
             data = json.load(f)
 
-        for x in request.nric:
+        if len(request.nric) > 1:
+            for x in request.nric:
+                for i in data:
+                    if i["ic"] == x:
+                        i["checkout"] = request.datetime
+                        print(x + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+                        break
+        else:
             for i in data:
-                if i["ic"] == x:
-                    i["checkout"] = request.datetime
-                    print(x + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
-                    break
+                    if i["ic"] == request.nric[0]:
+                        i["checkout"] = request.datetime
+                        print(request.nric[0] + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+                        break
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)

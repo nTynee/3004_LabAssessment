@@ -222,8 +222,10 @@ class SafeEntry:
             location_input = input("\nPlease Select Location: ")
             
             if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
-                date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-                response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
+                date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f') 
+                nric_list = []    
+                nric_list.append(NRIC)          
+                response = self.safe_entry_stub.CheckIn(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
                     print('Successfully checked in at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
@@ -245,7 +247,9 @@ class SafeEntry:
             
             if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
                 date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-                response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = NRIC, location = LOCATIONS[int(location_input)-1], datetime = date_time))
+                nric_list = []
+                nric_list.append(NRIC)
+                response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = nric_list, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
                 if response.status:
                     print('Successfully checked out at ' + LOCATIONS[int(location_input)-1] + ' during ' + date_time)
