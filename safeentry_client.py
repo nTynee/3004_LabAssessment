@@ -31,6 +31,7 @@ import threading
 import os
 
 NRIC = ''
+NAME = ''
 LOCATIONS = []
 NOTIFICATIONS = []
 GROUP_CHECKIN = []
@@ -81,6 +82,7 @@ class SafeEntry:
         # NOTE(gRPC Python Team): .close() is possible on a channel and should be
         # used in circumstances in which the with statement does not fit the needs
         # of the code.
+
         response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
 
         while(1):
@@ -106,6 +108,7 @@ class SafeEntry:
     
     def login(self, number, word):
         global NRIC
+        global NAME
         while(1):
             print("Please Enter Login Credentials.")
 
@@ -127,17 +130,18 @@ class SafeEntry:
             NRIC = user_input.upper()
 
             if response.status == 'success':
+                NAME = response.name
                 if number == 1:
-                    self.user_ui(response.name)
+                    self.user_ui()
                 elif number == 2:
-                    self.officer_ui(response.name)
+                    self.officer_ui()
             else:
                 print("\nError Logging In. Please Try Again!\n")
                 continue
     
-    def user_ui(self, name):
+    def user_ui(self):
         while(1):
-            print("\nWelcome {}!".format(name))
+            print("\nWelcome {}!".format(NAME))
             # get notifications from folder
             bool = self.store_notifications()
             # print notifications from folder

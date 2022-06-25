@@ -15,6 +15,7 @@
 
 from concurrent import futures
 import logging
+from re import I
 
 import grpc
 from numpy import diff
@@ -22,6 +23,7 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
+import io
 import os
 import pandas as pd
 from csv import writer
@@ -55,10 +57,13 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
-        with open("Locations/" + request.location + ".json") as f:
-            data = json.load(f)
+
+        location_path = "Locations/" + request.location + ".json"  
+        with open(location_path, 'r') as f:
+            data = json.load(f)  
         
         if len(request.nric) > 1:
+            # store into location data
             for i in request.nric:
                 dict = {
                     "ic" : i,
@@ -66,6 +71,22 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                     "checkout" : ""
                 }    
                 data.insert(0, dict)
+                with open(location_path, 'w') as f:
+                    json.dump(data, f)
+
+                # store into user history
+                user_path = "Records/" + i + ".json" 
+                with open(user_path, 'r') as f:
+                    user_data = json.load(f)  
+                dict2 = {
+                    "location" : request.location,
+                    "checkin" : request.datetime,
+                    "checkout" : ""
+                }
+                user_data.insert(0, dict2)
+                with open(user_path, 'w') as f:
+                    json.dump(user_data, f)
+
         else:
             dict = {
                     "ic" : request.nric[0],
@@ -73,10 +94,25 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                     "checkout" : ""
                 }    
             data.insert(0, dict)
-        print(data)
 
-        with open("Locations/" + request.location + ".json", 'w') as f:
-            json.dump(data, f)
+            print(data)
+
+            with open(location_path, 'w') as f:
+                json.dump(data, f)
+
+            # store into user history
+            user_path = "Records/" + request.nric[0] + ".json" 
+            with open(user_path, 'r') as f:
+                user_data = json.load(f)  
+            dict2 = {
+                "location" : request.location,
+                "checkin" : request.datetime,
+                "checkout" : ""
+            }
+            user_data.insert(0, dict2)
+            with open(user_path, 'w') as f:
+                json.dump(user_data, f)
+
         check_bool = True
         
         if check_bool:
@@ -90,20 +126,43 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
         if len(request.nric) > 1:
             for x in request.nric:
+                # store into user history
+                with open("Records/" + x + ".json") as f:
+                    user_data = json.load(f)
+                for i in user_data:
+                    if i['location'] == request.location:
+                        i['checkout'] = request.datetime
+                        break
+                with open("Records/" + x + ".json", 'w') as f:
+                    json.dump(user_data, f)
+
+                # store into location data
                 for i in data:
                     if i["ic"] == x:
                         i["checkout"] = request.datetime
                         print(x + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
                         break
         else:
+            # store into user history
+            with open("Records/" + request.nric[0] + ".json") as f:
+                    user_data = json.load(f)
+            for i in user_data:
+                if i['location'] == request.location:                    
+                    i['checkout'] = request.datetime
+                    break
+            with open("Records/" + request.nric[0] + ".json", 'w') as f:
+                json.dump(user_data, f)
+
+            # store into location data
             for i in data:
-                    if i["ic"] == request.nric[0]:
-                        i["checkout"] = request.datetime
-                        print(request.nric[0] + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
-                        break
+                if i["ic"] == request.nric[0]:
+                    i["checkout"] = request.datetime                    
+                    break
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
+            print(request.nric[0] + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+        
         check_bool = True
  
         return safeentry_pb2.CheckResponse(status = check_bool)
