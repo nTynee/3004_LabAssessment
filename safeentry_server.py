@@ -215,7 +215,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                         #save to a global list to return back
                         notification_list.append(i["ic"])         
                         location = re.sub(r"(\w)([A-Z])", r"\1 \2", request.location)             
-                        data = pd.DataFrame({'Content': ["Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
+                        data = pd.DataFrame({'Content': ["There's a COVID case while you were at {0} from {1} to {2}. Please take note for 14 days!".format(location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
 
                         #check exists
                         path = "Notification/" + i['ic'] + ".csv"
