@@ -31,7 +31,7 @@ from datetime import datetime
 
 input_file = ""
 client_list = []
-noti_list = []
+notification_list = []
 
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
     print("+++++++++++++++++++++++++ SafeEntry System Server Started +++++++++++++++++++++++++")
@@ -98,7 +98,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 }    
             data.insert(0, dict)
 
-            print(data)
+            # print(data)
 
             with open(location_path, 'w') as f:
                 json.dump(data, f)
@@ -185,6 +185,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         return safeentry_pb2.history_record(response=None, status='error')    
 
     def DeclareLocation(self, request, context):
+        global notification_list
         print("Retrieving location details for declaration...")
 
         infected_checkin = datetime.strptime(request.datetime, '%Y-%m-%dT%H:%M:%S.%f')
@@ -212,7 +213,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                 for j in user_data: 
                     if i['ic'] == j['nric']:
                         #save to a global list to return back
-                        noti_list.append(i["ic"])                      
+                        notification_list.append(i["ic"])    
                         data = pd.DataFrame({'Content': ["Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
 
                         #check exists
@@ -221,15 +222,17 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                         if exist:
                             df = pd.read_csv(path)
                             df = pd.concat([df, data]).drop_duplicates()
-                            print(df)
                             df.to_csv(path, mode='w', index=False, header=['Content'])
                         else:                            
                             data.to_csv(path, mode='w', index=False, header=['Content'])
                             
                         break
+
         
-        print("Declaring location...")
-        return safeentry_pb2.location(response='success', noti_list=noti_list)
+        #drop duplicates
+        temp_list = list(dict.fromkeys(notification_list))    
+        print("Declaring location for {}...".format(temp_list))
+        return safeentry_pb2.location(response='success', noti_list=notification_list)
 
 
 class Password(safeentry_pb2_grpc.PaswordSettingServicer):
@@ -275,18 +278,13 @@ class Notification(safeentry_pb2_grpc.NotificationServicer):
         """
         This method is called when a clients sends a Declaration to the server.
         """
-        # this is only for the server console
-        print("[{}]".format(request.message))
         self.notification = request
         return safeentry_pb2.Empty()
 
     def DeleteUserFromNotiList(self, request, context):
-        print(noti_list)
-        print(request.message)
-        for x in noti_list:
-            print(x)
+        for x in notification_list:
             if x == request.message:
-                noti_list.remove(request.message)
+                notification_list.remove(request.message)
         return safeentry_pb2.Empty()
 
 

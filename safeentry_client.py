@@ -64,14 +64,14 @@ class SafeEntry:
                             difference = len(reader) - len(NOTIFICATIONS)
                             temp_list = []
                             for i in range(difference):
-                                if 'Content' not in reader[-i]:
-                                    NOTIFICATIONS.append(reader[-i])
-                                    temp_list.append(reader[-i])
+                                temp_list.append(reader[-difference])
+                                difference = difference-1
 
                             # prints new notifications
                             print("\n++++++++++++++++++++++++++++++++++++++++++++++++ NEW NOTIFICATION ++++++++++++++++++++++++++++++++++++++++++++++++")
                             for x in temp_list:
-                                print (x)
+                                if 'Content' not in x:
+                                    print (x)
                             print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
                             temp_list.clear()
@@ -85,6 +85,9 @@ class SafeEntry:
         # of the code.
 
         response = self.safe_entry_stub.Message(safeentry_pb2.Request(message = 'Hello! Welcome to the SafeEntry system!'))
+        LOCATIONS.clear()
+        NOTIFICATIONS.clear()
+        GROUP_CHECKIN.clear()
 
         while(1):
             # get locations from folder
@@ -171,7 +174,6 @@ class SafeEntry:
             elif user_input == '7':
                 confirm = input("Confirm Log Out? (y/n): ")
                 if confirm.lower() == 'y':
-                    NOTIFICATIONS.clear()
                     print("\n===================================================================================================")
                     print("See you again!")
                     print("===================================================================================================\n")
@@ -212,18 +214,21 @@ class SafeEntry:
             if x == file:
                 path = 'Notification/' + x
                 with open(path, 'r', encoding='UTF8') as f:
-                    reader = csv.reader(f)
-                    for notification in reader:
-                        if 'Content' not in notification:
-                            NOTIFICATIONS.append(notification)
+                    reader = list(csv.reader(f))
+                    if NOTIFICATIONS != reader:
+                        difference = len(reader) - len(NOTIFICATIONS)
+                        for i in range(difference):
+                            NOTIFICATIONS.append(reader[-difference])
+                            difference = difference-1
                 return True
         return False
     
     def check_notifications(self, bool):
-        if bool and len(NOTIFICATIONS) != 0:
+        if bool and len(NOTIFICATIONS) > 1:
             print("\n++++++++++++++++++++++++++++++++++++++++++++++++ NOTIFICATIONS ++++++++++++++++++++++++++++++++++++++++++++++++")
             for x in NOTIFICATIONS:
-                print (x)
+                if 'Content' not in x:
+                    print (x)
             print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         else:
             print("\n++++++++++++++++++++++++++++++++++++++ NO NOTIFICATION ++++++++++++++++++++++++++++++++++++++")
@@ -244,7 +249,7 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
 
-            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+            if location_input.isdigit() or int(location_input) <= len(LOCATIONS):
                 date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f') 
                 nric_list = []    
                 nric_list.append(NRIC)          
@@ -270,7 +275,7 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
             
-            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+            if location_input.isdigit() or int(location_input) <= len(LOCATIONS):
                 date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
                 nric_list = []
                 nric_list.append(NRIC)
@@ -297,7 +302,7 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
             
-            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+            if location_input.isdigit() or int(location_input) <= len(LOCATIONS):
 
                 while True:
                     nric_list = []
@@ -349,7 +354,7 @@ class SafeEntry:
 
             location_input = input("\nPlease Select Location: ")
             
-            if location_input.isdigit() or int(location_input) <= LOCATIONS.count:
+            if location_input.isdigit() or int(location_input) <= len(LOCATIONS):
                 date_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
                 response = self.safe_entry_stub.CheckOut(safeentry_pb2.CheckRequest(nric = GROUP_CHECKIN, location = LOCATIONS[int(location_input)-1], datetime = date_time))
 
@@ -417,10 +422,10 @@ class SafeEntry:
             self.print_locations()
 
             location_input = input("\nPlease Select Location: ")
-            if location_input.strip().isdigit() or int(location_input) <= LOCATIONS.count:
-                nric = input('Enter NRIC: ')
+            if location_input.strip().isdigit() or int(location_input) <= len(LOCATIONS):
+                nric = input('Enter NRIC of infected person: ')
                 if self.validate_nric(nric):
-                    date_entry = input('Enter checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
+                    date_entry = input('Enter the checked in datetime in YYYY-MM-DD HH:MM format (e.g., 2022-06-20 10:30): ')
                     is_date = self.check_date_format(date_entry)
                     if is_date:      
                         d = datetime.strptime(date_entry, "%Y-%m-%d %H:%M")
