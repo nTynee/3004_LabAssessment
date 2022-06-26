@@ -16,6 +16,7 @@
 from concurrent import futures
 import logging
 from re import I
+import re
 
 import grpc
 from numpy import diff
@@ -23,7 +24,6 @@ import safeentry_pb2
 import safeentry_pb2_grpc
 
 import json
-import io
 import os
 import pandas as pd
 from csv import writer
@@ -213,8 +213,9 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
                 for j in user_data: 
                     if i['ic'] == j['nric']:
                         #save to a global list to return back
-                        notification_list.append(i["ic"])    
-                        data = pd.DataFrame({'Content': ["Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], request.location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
+                        notification_list.append(i["ic"])         
+                        location = re.sub(r"(\w)([A-Z])", r"\1 \2", request.location)             
+                        data = pd.DataFrame({'Content': ["Hi {0}, there's a COVID case while you were at {1} from {2} to {3}. Please take note for 14 days!".format(j['name'], location, checkin.strftime('%d/%m/%y %H:%M:%S'), checkout)]})
 
                         #check exists
                         path = "Notification/" + i['ic'] + ".csv"
