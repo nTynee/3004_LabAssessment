@@ -64,14 +64,15 @@ class SafeEntry:
                             difference = len(reader) - len(NOTIFICATIONS)
                             temp_list = []
                             for i in range(difference):
-                                NOTIFICATIONS.append(reader[-i])
-                                temp_list.append(reader[-i])
+                                if 'Content' not in reader[-i]:
+                                    NOTIFICATIONS.append(reader[-i])
+                                    temp_list.append(reader[-i])
 
                             # prints new notifications
-                            print("\n+++++++++++++++++++++ NEW NOTIFICATION +++++++++++++++++++++")
+                            print("\n++++++++++++++++++++++++++++++++++++++++++++++++ NEW NOTIFICATION ++++++++++++++++++++++++++++++++++++++++++++++++")
                             for x in temp_list:
                                 print (x)
-                            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
                             temp_list.clear()
 
@@ -170,6 +171,7 @@ class SafeEntry:
             elif user_input == '7':
                 confirm = input("Confirm Log Out? (y/n): ")
                 if confirm.lower() == 'y':
+                    NOTIFICATIONS.clear()
                     print("\n===================================================================================================")
                     print("See you again!")
                     print("===================================================================================================\n")
@@ -212,18 +214,19 @@ class SafeEntry:
                 with open(path, 'r', encoding='UTF8') as f:
                     reader = csv.reader(f)
                     for notification in reader:
-                        NOTIFICATIONS.append(notification)
+                        if 'Content' not in notification:
+                            NOTIFICATIONS.append(notification)
                 return True
         return False
     
     def check_notifications(self, bool):
         if bool and len(NOTIFICATIONS) != 0:
-            print("\n+++++++++++++++++++++ NOTIFICATIONS +++++++++++++++++++++")
+            print("\n++++++++++++++++++++++++++++++++++++++++++++++++ NOTIFICATIONS ++++++++++++++++++++++++++++++++++++++++++++++++")
             for x in NOTIFICATIONS:
                 print (x)
-            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         else:
-            print("\n+++++++++++++++++++++ NO NOTIFICATION +++++++++++++++++++++")
+            print("\n++++++++++++++++++++++++++++++++++++++ NO NOTIFICATION ++++++++++++++++++++++++++++++++++++++")
 
     def generate_nric_request(self, request, nric):
         for i, char in enumerate(request):
@@ -235,7 +238,7 @@ class SafeEntry:
 
     def check_in(self):
         while(1):
-            print('\n++++++++ CHECKING IN ++++++++\n')
+            print('\n++++++++++++++++++++++++++++++++++++++ CHECKING IN ++++++++++++++++++++++++++++++++++++++\n')
             print("List Of Locations: ")
             self.print_locations()
 
@@ -261,7 +264,7 @@ class SafeEntry:
 
     def check_out(self):
         while(1):
-            print('\n++++++++ CHECKING OUT ++++++++\n')
+            print('\n++++++++++++++++++++++++++++++++++++++ CHECKING OUT ++++++++++++++++++++++++++++++++++++++\n')
             print("List Of Locations: ")
             self.print_locations()
 
@@ -288,7 +291,7 @@ class SafeEntry:
     def group_check_in(self):
         global GROUP_CHECKIN
         while(1):
-            print('\n++++++++ GROUP CHECK IN ++++++++\n')
+            print('\n++++++++++++++++++++++++++++++++++++++ GROUP CHECK IN ++++++++++++++++++++++++++++++++++++++\n')
             print("List Of Locations: ")
             self.print_locations()
 
@@ -364,7 +367,7 @@ class SafeEntry:
 
     def change_password(self):
         while(1):
-            print('\n++++++++ CHANGE PASSWORD ++++++++\n')
+            print('\n++++++++++++++++++++++++++++++++++++++ CHANGE PASSWORD ++++++++++++++++++++++++++++++++++++++\n')
             old_password = input("Please Input Current Password: ")
             new_password = input("\nPlease Input New Password: ")
             confirm = input("\nConfirm? (y/n): ")
@@ -400,7 +403,7 @@ class SafeEntry:
 
     def show_history(self):
         response_history = self.location_stub.GetHistoryRecord(safeentry_pb2.get_user_history(nric = NRIC))    
-        print('\n++++++++ HISTORY OF LOCATIONS ++++++++\n')    
+        print('\n++++++++++++++++++++++++++++++++++++++ HISTORY OF LOCATIONS ++++++++++++++++++++++++++++++++++++++\n')    
         if response_history.status == "error":
             print("No Records Found!")    
         else:

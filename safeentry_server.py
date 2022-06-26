@@ -34,6 +34,7 @@ client_list = []
 noti_list = []
 
 class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
+    print("+++++++++++++++++++++++++ SafeEntry System Server Started +++++++++++++++++++++++++")
 
     def Message(self, request, context):
         return safeentry_pb2.Reply(message = request.message)
@@ -44,6 +45,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 data = json.load(f) 
             for i in data:
                 if (request.nric == i['nric'] and request.password == i['password']):
+                    print("User {} ({}) has successfully logged in.".format(i['name'], i['nric']))
                     return safeentry_pb2.StatusInfo(status = 'success', name = i['name'])
 
         elif request.role == 2:
@@ -51,9 +53,10 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 data = json.load(f) 
             for i in data:
                 if (request.nric.lower() == i['email'] and request.password == i['password']):
+                    print("MOH officer {} ({}) has successfully logged in.".format(i['name'], i['email']))
                     return safeentry_pb2.StatusInfo(status = 'success', name = i['name'])  
 
-        print("error")
+        print("User has error logging in.")
         return safeentry_pb2.StatusInfo(status = 'error')
     
     def CheckIn(self, request, context):
@@ -117,7 +120,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
         
         if check_bool:
             for i in request.nric: 
-                print(i + ' has successfully checked in at ' + request.location + ' during ' + request.datetime)
+                print('{} has successfully checked in at {} during {}.'.format(i, request.location, request.datetime))
         return safeentry_pb2.CheckResponse(status = check_bool)
 
     def CheckOut(self, request, context):
@@ -140,7 +143,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
                 for i in data:
                     if i["ic"] == x:
                         i["checkout"] = request.datetime
-                        print(x + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+                        print('{} has successfully checked out at {} during {}.'.format(x, request.location, request.datetime))
                         break
         else:
             # store into user history
@@ -161,7 +164,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 
         with open("Locations/" + request.location + ".json", 'w') as f:
             json.dump(data, f)
-            print(request.nric[0] + ' has successfully checked out at ' + request.location + ' during ' + request.datetime)
+            print('{} has successfully checked out at {} during {}.'.format(request.nric[0], request.location, request.datetime))
         
         check_bool = True
  
@@ -171,8 +174,7 @@ class SafeEntry(safeentry_pb2_grpc.SafeEntryServicer):
 class Location(safeentry_pb2_grpc.LocationDataServicer):
 
     def GetHistoryRecord(self, request, context):
-        print("Retrieving history records...")
-        print(request.nric)
+        print("Retrieving history records of user {}...".format(request.nric))
 
         path = "Records/" + request.nric + ".json"
         if os.path.exists(path):    
@@ -183,7 +185,7 @@ class Location(safeentry_pb2_grpc.LocationDataServicer):
         return safeentry_pb2.history_record(response=None, status='error')    
 
     def DeclareLocation(self, request, context):
-        print("Retrieving location details...")
+        print("Retrieving location details for declaration...")
 
         infected_checkin = datetime.strptime(request.datetime, '%Y-%m-%dT%H:%M:%S.%f')
 
@@ -253,18 +255,17 @@ class Password(safeentry_pb2_grpc.PaswordSettingServicer):
 class Notification(safeentry_pb2_grpc.NotificationServicer):
 
     def __init__(self):
-        # # List with all the notification history
+        # notification string
         self.notification = ''
 
-    # The stream which will be used to send new notifications to clients
+    # the stream which will be used to send new notifications to clients
     def SendNotification(self, request_iterator, context):
         """
         This is a response-stream type call. This means the server can keep sending messages.
         Every client opens this connection and waits for server to send new messages.
         """
-        lastindex = 0
         previous_notification = ''
-        # For every client a infinite loop starts (in gRPC's own managed thread)
+        # for every client a infinite loop starts (in gRPC's own managed thread)
         while True:
             if self.notification != previous_notification:
                 previous_notification = self.notification
@@ -280,7 +281,10 @@ class Notification(safeentry_pb2_grpc.NotificationServicer):
         return safeentry_pb2.Empty()
 
     def DeleteUserFromNotiList(self, request, context):
+        print(noti_list)
+        print(request.message)
         for x in noti_list:
+            print(x)
             if x == request.message:
                 noti_list.remove(request.message)
         return safeentry_pb2.Empty()
