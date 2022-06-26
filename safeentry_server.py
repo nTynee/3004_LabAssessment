@@ -303,4 +303,9 @@ def serve():
 
 if __name__ == '__main__':
     logging.basicConfig()    
-    serve()
+    try:
+        serve()
+    except KeyboardInterrupt:
+        print("+++++++++++++++++++++++++ Shutting SafeEntry System Server +++++++++++++++++++++++++")
+    except:
+        print("Error starting the server!")

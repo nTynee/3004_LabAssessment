@@ -476,4 +476,7 @@ class SafeEntry:
 if __name__ == '__main__':
     logging.basicConfig()
     client = SafeEntry()
-    client.run()
+    try:
+        client.run()
+    except:
+        print("Not able to reach safe entry server!")
